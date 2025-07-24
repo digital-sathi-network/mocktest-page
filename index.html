@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Sathi Network - Learn | Earn | Grow</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root{
+            --primary: #00003f;
+            --primary-light: #1a1a5e;
+            --secondary: #f8f9fa;
+            --accent: #3a86ff;
+            --accent-light: #83b2ff;
+            --text: #333;
+            --text-light: #f8f9fa;
+            --shadow: 0 4px 12px rgba(0, 0, 63, 0.1);
+            --transition: all 0.3s ease;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --card-colors: #ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff7d00;
+            --yellow-accent: #FFD700;
+        }
+
+        /* Universal Box-Sizing */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e40af 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        /* Hero Section Styles */
+        .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e40af 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex; /* Added for vertical centering */
+            align-items: center; /* Added for vertical centering */
+            justify-content: center; /* Added for horizontal centering */
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: white !important; /* Ensure white background */
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Navbar Scrolled State */
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.9) !important; /* Slightly transparent when scrolled */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-toggler {
+            border: 1px solid #1f2937;
+            padding: 4px 8px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.2rem rgba(31, 41, 55, 0.25);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2831, 41, 55, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .navbar-brand {
+            color: #1f2937 !important; /* Default brand text color */
+            font-weight: 700;
+        }
+
+        /* Ensure brand text is white even with the general navbar-brand rule */
+        .navbar-brand .text-white {
+            color: white !important;
+        }
+
+        .navbar-brand img {
+            height: 50px;
+            width: auto;
+        }
+
+        .nav-link {
+            color: #1f2937 !important; /* Default link color */
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6 !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            color: #3b82f6 !important; /* Active link color */
+            font-weight: 600; /* Make active link bolder */
+            border-bottom: none; /* Remove the underline */
+        }
+
+
+        .navbar-collapse {
+            flex-basis: 100%;
+            flex-grow: 1;
+            align-items: center;
+        }
+
+        /* IMPORTANT: Fix for navbar collapse on larger screens */
+        /* This ensures the navbar content is always visible on desktop */
+        @media (min-width: 992px) { /* Bootstrap's 'lg' breakpoint */
+            .navbar-collapse {
+                display: flex !important; /* Force display flex on larger screens */
+                visibility: visible !important; /* Ensure visibility */
+                height: auto !important; /* Ensure height is not zero */
+                overflow: visible !important; /* Ensure content is not clipped */
+            }
+        }
+
+        /* Responsive Navbar Collapse for smaller screens */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: white;
+                padding: 1rem;
+                margin-top: 0.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .navbar-nav {
+                text-align: center;
+            }
+
+            .nav-item {
+                margin: 0.25rem 0;
+            }
+        }
+
+        /* Premium Button Styles */
+        .btn-premium {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Container Padding */
+        .container {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        /* Hero Content Styles */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding-top: 120px;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+section{
+        display: block;
+    unicode-bidi: isolate;
+}
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #ffffff, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Countdown Timer Styles */
+        .countdown-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 3rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .countdown-title {
+            color: #fbbf24;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            display: block;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Call to Action Buttons */
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #8b5cf6, #a855f7);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
+            color: white;
+        }
+
+        .btn-secondary-custom {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+            padding: 10px 28px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary-custom:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            color: white;
+        }
+
+       /* Subjects Section */
+        .subjects {
+            padding: 5rem 2rem;
+            background-color: var(--secondary);
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: inline-block;
+            position: relative;
+            font-weight: 800;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            color: var(--text);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Subject Cards */
+        .subject-card {
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            border: none;
+            transform: translateY(0);
+            animation: cardEntrance 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subject-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+
+        .subject-header {
+            padding: 1.5rem 1.5rem 0;
+            position: relative;
+        }
+
+        .subject-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(108, 99, 255, 0.2));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .subject-card:hover .subject-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .subject-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            backdrop-filter: blur(5px);
+        }
+
+        .subject-content {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .subject-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .subject-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .subject-description {
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .mini-cards {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .mini-card {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .mini-card:hover {
+            background: rgba(108, 99, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .mini-card i {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .features-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .features-list li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-left: 1.5rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .features-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 2px;
+            transform: rotate(45deg);
+        }
+
+        .btn-explore {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-explore:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.3);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+
+        .btn-explore i {
+            margin-left: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-explore:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .countdown-item {
+                min-width: 80px;
+                padding: 0.8rem 1rem;
+            }
+            
+            .countdown-number {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 1.5rem;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+                gap: 1.5rem;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                transform: translateY(-150%);
+                transition: transform 0.4s ease;
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero {
+                padding: 7rem 1.5rem 3rem;
+                min-height: 70vh;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .countdown {
+                flex-wrap: wrap;
+                gap: 0.8rem;
+            }
+
+            .countdown-item {
+                min-width: 70px;
+                padding: 0.8rem;
+            }
+
+            .countdown-number {
+                font-size: 1.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .quick-access-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+
+            .welcome-notification {
+                width: 90%;
+            }
+
+            .premium-card {
+                width: 300px;
+                right: 20px;
+                bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .countdown-item {
+                min-width: 60px;
+                padding: 0.6rem;
+            }
+            
+            .countdown-number {
+                font-size: 1.3rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .subject-card {
+                border-radius: 16px;
+            }
+            
+            .subject-header,
+            .subject-content {
+                padding: 1.2rem;
+            }
+
+            .premium-card {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+                bottom: 120px;
+            }
+        }
+        /* Quick Access */
+        .quick-access {
+            padding: 2rem;
+            background-color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quick-access-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .quick-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            text-decoration: none;
+            transition: var(--transition);
+            text-align: center;
+            height: 100%;
+            background: white;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: rgba(108, 99, 255, 0.2);
+        }
+
+        .quick-btn i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .quick-btn:hover i {
+            transform: scale(1.1);
+        }
+
+        .quick-btn span {
+            font-size: 0.95rem !important;
+            font-weight: 600 !important;
+            color: var(--text) !important;
+        }
+
+
+        /* Floating Elements Animation */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none; /* Allow clicks to pass through */
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-close {
+            filter: invert(1); /* Makes the close button white */
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: #1f2937;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 2rem;
+        }
+
+        .footer h5 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #60a5fa;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Animation for cards on scroll */
+        .subject-card.animate-in {
+            animation: fadeInScale 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="WhatsApp Image 2025-07-24 at 20.48.11.jpeg" alt="Digital Sathi Network Logo" class="me-2">
+                <span class="text-black fw-bold">Digital Sathi Network</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="mocktests.html"><i class="fas fa-book me-1"></i> Mock Tests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html"><i class="fas fa-info-circle me-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html"><i class="fas fa-envelope me-1"></i> Contact</a>
+                    </li>
+
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section" id="home">
+        <div class="floating-elements">
+            <i class="fas fa-microchip floating-element" style="top: 10%; left: 10%; font-size: 2rem;"></i>
+            <i class="fas fa-brain floating-element" style="top: 20%; right: 15%; font-size: 1.5rem;"></i>
+            <i class="fas fa-network-wired floating-element" style="bottom: 30%; left: 20%; font-size: 2.5rem;"></i>
+            <i class="fas fa-robot floating-element" style="bottom: 20%; right: 10%; font-size: 2rem;"></i>
+        </div>
+
+        <div class="container hero-content">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-10">
+                    <h1 class="hero-title">Ace Your Digital Future with AI</h1>
+                    <p class="hero-subtitle">
+                        Comprehensive platform with cutting-edge AI courses, hands-on projects, and personalized learning paths to maximize your digital skills and career growth.
+                    </p>
+
+                    <div class="countdown-container">
+                        <div class="countdown-title">Next Batch Starts In</div>
+                        <div class="countdown" id="countdown">
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="days">30</span>
+                                <span class="countdown-label">Days</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="hours">12</span>
+                                <span class="countdown-label">Hours</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="minutes">45</span>
+                                <span class="countdown-label">Minutes</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="seconds">30</span>
+                                <span class="countdown-label">Seconds</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cta-buttons">
+                        <a href="#" class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#premiumModal">
+                            <i class="fas fa-crown me-2"></i> Go Premium
+                        </a>
+                        <a href="#subjects" class="btn-secondary-custom">
+                            <i class="fas fa-play me-2"></i> Explore Free
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-access">
+        <div class="quick-access-container">
+            <a href="#" class="quick-btn">
+                <span style="font-size: 2rem;">⚛️</span>
+                <span>Physics</span>
+            </a>
+            <a href="#" class="quick-btn">
+                <span style="font-size: 2rem;">🧪</span>
+                <span>Chemistry</span>
+            </a>
+            <a href="#" class="quick-btn">
+                <span style="font-size: 2rem;">🧬</span>
+                <span>Biology</span>
+            </a>
+            <a href="#" class="quick-btn">
+                <span style="font-size: 2rem;">📚</span>
+                <span>English</span>
+            </a>
+            <a href="#" class="quick-btn">
+                <span style="font-size: 2rem;">📝</span>
+                <span>Mock Tests</span>
+            </a>
+            <a href="#" class="quick-btn" onclick="showPremiumPopup()">
+                <span style="font-size: 2rem;">⭐</span>
+                <span>Go Premium</span>
+            </a>
+        </div>
+    </section>
+
+
+
+   <section class="subjects" id="subjects">
+        <div class="section-title">
+            <h2>Master All MDCAT Subjects</h2>
+            <p>Comprehensive study material and practice questions for each subject, designed for maximum retention</p>
+        </div>
+        
+        <div class="subjects-grid">
+            <div class="subject-card" style="animation-delay: 0.1s;">
+                <div class="subject-header">
+                    <div class="subject-icon">⚛️</div>
+                    <span class="subject-badge">900+ MCQs</span>
+                </div>
+                <div class="subject-content">
+                    <h3 class="subject-title">Physics</h3>
+                    <p class="subject-description">Master mechanics, waves, thermodynamics, and modern physics with our comprehensive question bank and visual learning tools.</p>
+                    
+                    <div class="mini-cards">
+                        <span class="mini-card"><i>📊</i> 15 Tests</span>
+                        <span class="mini-card"><i>⏱️</i> Timed</span>
+                        <span class="mini-card"><i>📈</i> Analytics</span>
+                    </div>
+                    
+                    <ul class="features-list">
+                        <li>Detailed solutions with step-by-step explanations</li>
+                       
+                        <li>Chapter-wise practice tests</li>
+                        <li>Real exam pattern questions</li>
+                    </ul>
+                    <a href="#" class="btn-explore">Explore Physics <i>→</i></a>
+                </div>
+            </div>
+
+            <div class="subject-card" style="animation-delay: 0.2s;">
+                <div class="subject-header">
+                    <div class="subject-icon">🧪</div>
+                    <span class="subject-badge">1000+ MCQs</span>
+                </div>
+                <div class="subject-content">
+                    <h3 class="subject-title">Chemistry</h3>
+                    <p class="subject-description">Organic, inorganic, and physical chemistry topics with reaction mechanisms, 3D molecule visualizer, and problem-solving techniques.</p>
+                    
+                    <div class="mini-cards">
+                        <span class="mini-card"><i>⚗️</i> 21 Tests</span>
+                        <span class="mini-card"><i>🧪</i> Reactions</span>
+                        <span class="mini-card"><i>📊</i> Periodic Table</span>
+                    </div>
+                    
+                    <ul class="features-list">
+                        <li>Reaction mechanisms with animated diagrams</li>
+                        <li>Interactive periodic table with properties</li>
+                        <li>Equation balancing practice with hints</li>
+                        <li>Chemical bonding visualizations</li>
+                    </ul>
+                    <a href="#" class="btn-explore">Explore Chemistry <i>→</i></a>
+                </div>
+            </div>
+
+            <div class="subject-card" style="animation-delay: 0.3s;">
+                <div class="subject-header">
+                    <div class="subject-icon">🧬</div>
+                    <span class="subject-badge">900+ MCQs</span>
+                </div>
+                <div class="subject-content">
+                    <h3 class="subject-title">Biology</h3>
+                    <p class="subject-description">Cell biology, genetics, ecology, and human physiology with detailed diagrams, 3D models, and comprehensive explanations.</p>
+                    
+                    <div class="mini-cards">
+                        <span class="mini-card"><i>🧫</i> 18 Tests</span>
+                        <span class="mini-card"><i>🧠</i> Systems</span>
+                        <span class="mini-card"><i>📊</i> Diagrams</span>
+                    </div>
+                    
+                    <ul class="features-list">
+                        <li>Labeled anatomical diagrams with zoom</li>
+                        <li>Physiology system overviews with flowcharts</li>
+                        <li>Classification charts with examples</li>
+                        <li>High-yield topic focus areas</li>
+                    </ul>
+                    <a href="#" class="btn-explore">Explore Biology <i>→</i></a>
+                </div>
+            </div>
+
+            <div class="subject-card" style="animation-delay: 0.4s;">
+                <div class="subject-header">
+                    <div class="subject-icon">📚</div>
+                    <span class="subject-badge">800+ MCQs</span>
+                </div>
+                <div class="subject-content">
+                    <h3 class="subject-title">English</h3>
+                    <p class="subject-description">Grammar, vocabulary, comprehension, and essay writing skills tailored specifically for MDCAT English section success.</p>
+                    
+                    <div class="mini-cards">
+                        <span class="mini-card"><i>✍️</i> 10 Tests</span>
+                        <span class="mini-card"><i>📖</i> Grammar</span>
+                        <span class="mini-card"><i>🔍</i> Vocabulary</span>
+                    </div>
+                    
+                    <ul class="features-list">
+                        <li>Comprehensive grammar rules with examples</li>
+                        <li>Vocabulary builder with flashcards</li>
+                        <li>Reading comprehension strategies</li>
+                        <li>Essay writing templates and prompts</li>
+                    </ul>
+                    <a href="#" class="btn-explore">Explore English <i>→</i></a>
+                </div>
+            </div>
+
+            <div class="subject-card" style="animation-delay: 0.5s;">
+                <div class="subject-header">
+                    <div class="subject-icon">📝</div>
+                    <span class="subject-badge">15 Tests</span>
+                </div>
+                <div class="subject-content">
+                    <h3 class="subject-title">Mock Tests</h3>
+                    <p class="subject-description">Full-length practice tests simulating actual MDCAT exam conditions with detailed analytics and national ranking.</p>
+                    
+                    <div class="mini-cards">
+                        <span class="mini-card"><i>⏱️</i> Timed</span>
+                        <span class="mini-card"><i>📊</i> Analytics</span>
+                        <span class="mini-card"><i>🏆</i> Ranking</span>
+                    </div>
+                    
+                    <ul class="features-list">
+                        <li>Complete exam simulation with timer</li>
+                        <li>Detailed performance analysis by topic</li>
+                        <li>National rank comparison</li>
+                        <li>Custom test creation from weak areas</li>
+                    </ul>
+                    <a href="#" class="btn-explore">Take Mock Tests <i>→</i></a>
+                </div>
+            </div>
+
+            <div class="subject-card" style="animation-delay: 0.6s;">
+    <div class="subject-header">
+        <div class="subject-icon">👑</div>
+        <span class="subject-badge">Premium Exclusive</span>
+    </div>
+    <div class="subject-content">
+        <h3 class="subject-title">Digital Sathi Network Mcqs Package</h3>
+        <p class="subject-description">Unlock the complete MDCAT preparation system with premium strategies, advanced analytics, and exclusive content.</p>
+        
+        <div class="mini-cards">
+            <span class="mini-card"><i>📊</i> Advanced Analytics</span>
+            <span class="mini-card"><i>🔒</i> Exclusive Content</span>
+            <span class="mini-card"><i>⭐</i> Priority Support</span>
+        </div>
+        
+        <ul class="features-list">
+            <li>Full access to all premium strategy guides</li>
+            <li>Personalized performance tracking</li>
+            <li>15 full-length premium mock tests</li>
+            <li>Priority access to new content</li>
+            <li>Monthly Prize winning tests</li>
+                <li>Weekly Tests</li>
+            <li>Direct support from MDCAT experts</li>
+        </ul>
+        <a href="#" class="btn-explore" onclick="showPremiumPopup()">Unlock Premium <i>→</i></a>
+    </div>
+</div>
+        </div>
+    </section>
+
+    
+
+    <div class="modal fade" id="premiumModal" tabindex="-1" aria-labelledby="premiumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="premiumModalLabel">
+                        <i class="fas fa-crown text-warning me-2"></i>
+                        Unlock All Premium Features
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <h2 class="text-warning">₹2999</h2>
+                        <p class="text-muted">One-Time Payment - Lifetime Access</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success me-2"></i>What's Included:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-star text-warning me-2"></i>All premium courses and projects</li>
+                                <li><i class="fas fa-star text-warning me-2"></i>1-on-1 mentorship sessions</li>
+                                <li><i class="fas fa-star text-warning me-2"></i>Job placement assistance</li>
+                                <li><i class="fas fa-star text-warning me-2"></i>Industry certifications</li>
+                                <li><i class="fas fa-star text-warning me-2"></i>Exclusive community access</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-gift text-info me-2"></i>Bonus Features:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-trophy text-info me-2"></i>Monthly coding competitions</li>
+                                <li><i class="fas fa-trophy text-info me-2"></i>Resume building workshops</li>
+                                <li><i class="fas fa-trophy text-info me-2"></i>Interview preparation</li>
+                                <li><i class="fas fa-trophy text-info me-2"></i>Portfolio development</li>
+                                <li><i class="fas fa-trophy text-info me-2"></i>Priority support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
+                    <button type="button" class="btn btn-warning">
+                        <i class="fas fa-crown me-2"></i>Get Premium Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="WhatsApp Image 2025-07-24 at 20.48.11.jpeg" alt="Digital Sathi Network Logo" class="me-2" style="height: 40px; width: auto;">
+                        <span class="text-white fw-bold fs-5">Digital Sathi Network</span>
+                    </div>
+
+                    <p>Empowering the next generation with cutting-edge digital skills and AI knowledge. Learn, Earn, and Grow with us.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-decoration-none"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-decoration-none"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-decoration-none"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-decoration-none"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-decoration-none"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#subjects">Mock Tests</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Popular Courses</h5>
+                    <ul class="list-unstyled">
+                          <li><a href="#">English</a></li>
+                        <li><a href="#">Physics</a></li>
+                        <li><a href="#">Chemistry</a></li>
+                        <li><a href="#">Biology</a></li>
+                      
+                        <li><a href="#">Mock Tests</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4" id="about">
+                    <h5>Contact Info</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i>info@digitalsathi.com</li>
+                        <li><i class="fas fa-phone me-2"></i>+92 1234 567890</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i>Karachi, Pakistan</li>
+                        <li><i class="fas fa-clock me-2"></i>24/7 Support</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Digital Sathi Network. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Countdown Timer
+        function updateCountdown() {
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 30); // 30 days from now
+
+            const now = new Date().getTime();
+            const distance = targetDate.getTime() - now;
+
+            // If the countdown is finished, display 0s
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                $('#days').text('00');
+                $('#hours').text('00');
+                $('#minutes').text('00');
+                $('#seconds').text('00');
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            $('#days').text(days.toString().padStart(2, '0'));
+            $('#hours').text(hours.toString().padStart(2, '0'));
+            $('#minutes').text(minutes.toString().padStart(2, '0'));
+            $('#seconds').text(seconds.toString().padStart(2, '0'));
+        }
+
+        // Update countdown every second
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call to display immediately
+
+        // Smooth scrolling for anchor links
+        $('a[href^="#"]').on('click', function(event) {
+            var target = $(this.getAttribute('href'));
+            if( target.length ) {
+                event.preventDefault();
+                $('html, body').stop().animate({
+                    scrollTop: target.offset().top - 80 // Adjust for fixed navbar height
+                }, 1000);
+            }
+        });
+
+        // Navbar background on scroll
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 50) {
+                $('.navbar').addClass('scrolled');
+            } else {
+                $('.navbar').removeClass('scrolled');
+            }
+        });
+
+        // Card hover effects with jQuery (using animate.css classes if available, otherwise simple transform)
+        // Note: animate.css is not linked in the provided code, so this will only apply the class.
+        // For actual animation, you'd need to include animate.css.
+        $('.subject-card').hover(
+            function() {
+                $(this).addClass('animate__animated animate__pulse');
+            },
+            function() {
+                $(this).removeClass('animate__animated animate__pulse');
+            }
+        );
+
+        // AJAX simulation for premium signup
+        $('.modal-footer .btn-warning').click(function() { // Target specific button to avoid conflicts
+            const button = $(this);
+            const originalText = button.html();
+
+            button.html('<i class="fas fa-spinner fa-spin me-2"></i>Processing...');
+            button.prop('disabled', true);
+
+            // Simulate AJAX call
+            setTimeout(function() {
+                button.html('<i class="fas fa-check me-2"></i>Success!');
+                button.removeClass('btn-warning').addClass('btn-success');
+
+                setTimeout(function() {
+                    $('#premiumModal').modal('hide');
+                    button.html(originalText);
+                    button.removeClass('btn-success').addClass('btn-warning');
+                    button.prop('disabled', false);
+                }, 2000);
+            }, 2000);
+        });
+
+        // Floating animation for elements
+        $('.floating-element').each(function(index) {
+            $(this).css('animation-delay', (index * 0.5) + 's');
+        });
+
+        // Initialize tooltips (if any elements have data-bs-toggle="tooltip")
+        // This part requires Bootstrap's JS to be loaded.
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Add loading animation on page load (body.loaded class is not used for visual effect in CSS)
+        $(document).ready(function() {
+            $('body').addClass('loaded'); // This class is added but has no corresponding CSS rule in your provided style.
+
+            // Animate cards on scroll
+            $(window).scroll(function() {
+                $('.subject-card').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const elementBottom = elementTop + $(this).outerHeight();
+                    const viewportTop = $(window).scrollTop();
+                    const viewportBottom = viewportTop + $(window).height();
+
+                    // If the element is in the viewport, add the animation class
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass('animate-in');
+                    }
+                });
+            }).scroll(); // Trigger scroll event on load to animate visible cards
+        });
+
+        // JavaScript for the quick-access buttons (re-added as it was removed)
+        function showPremiumPopup() {
+            $('#premiumModal').modal('show'); // This will open your existing premium modal
+        }
+
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                // If the "Go Premium" button is clicked, the showPremiumPopup() will handle it.
+                // For other buttons, you might want to prevent default or add other logic.
+                const subject = btn.querySelector('span:last-child').textContent;
+                // alert(`You clicked on ${subject}!`); // Uncomment for testing click behavior
+            });
+        });
+
+        // Highlight active navbar link
+        $(document).ready(function() {
+            const currentPage = window.location.pathname.split("/").pop(); // Gets the filename (e.g., "index.html")
+
+            $('.nav-link').each(function() {
+                // For "Home" link, check if it's index.html or empty path
+                const linkHref = $(this).attr('href').split("/").pop();
+
+                if (linkHref === currentPage || (currentPage === "" && linkHref === "index.html")) {
+                    $(this).addClass('active');
+                } else if (linkHref.includes('#') && currentPage === linkHref.split('#')[0]) {
+                     $(this).addClass('active');
+                } else if (linkHref.includes('index.html') && currentPage === '') {
+                    // Special case for root URL pointing to index.html
+                    $(this).addClass('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
