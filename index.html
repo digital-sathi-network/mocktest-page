@@ -16,6 +16,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        .navbar {
+    z-index: 1055 !important; /* Higher than modal (1050) and other content */
+}
 
         :root{
             --primary: #00003f;
@@ -155,7 +158,11 @@
                 margin-top: 0.5rem;
                 border-radius: 8px;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                
             }
+            .navbar-collapse.collapse.show {
+    display: block !important;
+}
 
             .navbar-nav {
                 text-align: center;
