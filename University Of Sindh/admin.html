@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UoS Mock Test Admin Panel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Backendless SDK CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/backendless@7.4.7/dist/backendless.min.js"></script>
+
+    <!-- jsPDF and html2canvas CDN for PDF generation -->
+    <!-- html2canvas is used to convert HTML content to a canvas (image) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jsPDF is used to create and save PDF documents from images or text -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .dark .card {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .btn {
+            border-radius: 9999px; /* Full rounded */
+            padding: 12px 24px;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        /* New secondary button style for Clear Filters */
+        .btn-secondary {
+            padding: 30px;
+            height: 48px;
+            border-radius: 10px;
+            width:150px;
+            font-size: 15px;
+            background-color: white;
+            color: #4a5568; /* gray-700 */
+            border: 1px solid #cbd5e0; /* gray-300 */
+        }
+        .btn-secondary:hover {
+             background-color: #2d3748;
+            border-color: #f0f4f8; /* gray-100 */
+            color: white;
+        }
+        .dark .btn-secondary {
+            background-color: #4a5568; /* gray-700 */
+            color: #faf9f9; /* Black as requested */
+            border-color: #6b7280; /* gray-600 */
+        }
+        .dark .btn-secondary:hover {
+            border-color: #2d3748; /* gray-800 */
+            background-color: white;
+            color: #2d3748;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], .form-select {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            width: 100%;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        .dark input[type="text"], .dark input[type="email"], .dark input[type="password"], .dark .form-select {
+            background-color: #4a5568;
+            border-color: #6b7280;
+            color: #e2e8f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate; /* Changed to separate for rounded corners on cells */
+            border-spacing: 0; /* Remove space between borders */
+            margin-top: 1rem;
+            border-radius: 8px; /* Apply rounded corners to the whole table */
+            overflow: hidden; /* Ensures content respects border-radius */
+        }
+        th, td {
+            padding: 1rem; /* Increased padding */
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0; /* Added right border for vertical lines */
+        }
+        .dark th, .dark td {
+            border-bottom: 1px solid #4a5568;
+            border-right: 1px solid #4a5568;
+        }
+        /* Remove right border from last column */
+        th:last-child, td:last-child {
+            border-right: none;
+        }
+
+        th {
+            background-color: #007bff; /* Blue background for headers */
+            font-weight: 600;
+            color: white; /* White text for headers */
+            position: sticky; /* Make headers sticky for scrolling tables */
+            top: 0;
+            z-index: 10; /* Ensure headers stay above content */
+        }
+        .dark th {
+            background-color: #1a202c; /* Darker blue for dark mode headers */
+            color: #e2e8f0;
+        }
+        /* Style for top-left and top-right header corners */
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+        th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        /* Alternating row colors */
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa; /* Light gray for even rows */
+        }
+        .dark tbody tr:nth-child(even) {
+            background-color: #2d3748; /* Darker gray for even rows in dark mode */
+        }
+        tbody tr:nth-child(odd) {
+            background-color: #ffffff; /* White for odd rows */
+        }
+        .dark tbody tr:nth-child(odd) {
+            background-color: #1a202c; /* Even darker gray for odd rows in dark mode */
+        }
+
+        tr:hover {
+            background-color: #e2e8f0; /* Lighter hover effect */
+        }
+        .dark tr:hover {
+            background-color: #4a5568; /* Darker hover effect in dark mode */
+        }
+        
+        /* Message Box Styling */
+        #messageBox {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 0;
+            transform: translate(-50%, -20px);
+            min-width: 250px;
+            text-align: center;
+            pointer-events: none;
+        }
+        #messageBox.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+            pointer-events: auto;
+        }
+        .dark #messageBox {
+            background-color: #2d3748;
+            color: #e2e8f0;
+        }
+        #messageBox.error { border-left: 4px solid #dc3545; }
+        #messageBox.success { border-left: 4px solid #28a745; }
+        #messageBox.info { border-left: 4px solid #007bff; }
+
+        /* Hidden column for checkboxes */
+        .hidden-checkbox-column {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 transition-colors duration-300">
+    <!-- Message Box for user feedback -->
+    <div id="messageBox">
+        <p id="messageContent" class="font-semibold"></p>
+    </div>
+
+    <header class="bg-blue-600 dark:bg-blue-800 text-white p-6 shadow-lg rounded-b-xl">
+        <div class="container mx-auto flex items-center justify-between">
+            <h1 class="text-2xl font-bold">UoS Mock Test Admin Panel</h1>
+            <div class="flex items-center space-x-4">
+                <button id="darkModeToggle" class="bg-blue-700 hover:bg-blue-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-full shadow-md transition-colors duration-300 flex items-center">
+                    <i class="fas fa-moon mr-2" id="darkModeIcon"></i>
+                    <span id="darkModeText">Dark Mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-8 px-4">
+        <!-- Admin Login Section -->
+        <section id="adminLoginSection" class="flex justify-center items-center min-h-[calc(100vh-150px)]">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md text-center">
+                <h2 class="text-2xl font-bold mb-6 text-blue-600 dark:text-blue-400">Admin Login</h2>
+                <div class="mb-4">
+                    <label for="adminUsername" class="block text-left text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Email:</label>
+                    <input type="email" id="adminUsername" class="form-input" placeholder="Enter admin email">
+                </div>
+                <div class="mb-6">
+                    <label for="adminPassword" class="block text-left text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Password:</label>
+                    <input type="password" id="adminPassword" class="form-input" placeholder="Enter password">
+                </div>
+                <button id="adminLoginBtn" class="btn btn-primary w-full">Login</button>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard Section -->
+        <section id="adminDashboardSection" class="hidden">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Quiz Results Admin Panel</h2>
+                    <!-- Logout button -->
+                    <button id="logoutBtn" class="bg-blue-700 hover:bg-blue-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-full shadow-md transition-colors duration-300 flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </button>
+                </div>
+                
+                <!-- Combined Action Buttons and Dropdown Layout -->
+                <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                    <!-- Dropdown for Mock Test Selection -->
+                    <div class="flex items-center space-x-2">
+                        <label for="mockTestSelector" class="text-gray-700 dark:text-gray-300 font-semibold">Results to Show:</label>
+                        <select id="mockTestSelector" class="form-select border rounded-md px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <!-- Options will be dynamically generated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div id="actionButtonsContainer" class="flex flex-wrap justify-center md:justify-end gap-4">
+                        <button id="refreshDataBtn" class="btn btn-primary px-4 py-2">
+                            <i class="fas fa-sync-alt mr-2"></i> Refresh Data
+                        </button>
+                        <button id="savePdfBtn" class="btn btn-primary px-4 py-2">
+                            <i class="fas fa-file-pdf mr-2"></i> Save PDF
+                        </button>
+                        <button id="deleteAllDataBtn" class="btn btn-danger px-4 py-2">
+                            <i class="fas fa-trash-alt mr-2"></i> Delete All Data
+                        </button>
+                        <button id="deleteMultipleUsersBtn" class="btn btn-primary px-4 py-2">
+                            <i class="fas fa-user-slash mr-2"></i> Delete Multiple Users
+                        </button>
+                        <!-- Cancel button will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Single Table for displaying results -->
+                <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-inner mt-6">
+                    <h3 id="currentMockTestTitle" class="text-xl font-semibold mb-4 text-blue-700 dark:text-blue-300">Mock Test Results</h3>
+                    <div class="mb-4 text-gray-700 dark:text-gray-300">
+                        Total Records: <span id="totalRecordsCount" class="font-bold">0</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table id="resultsTable" class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th id="checkboxHeader" class="hidden-checkbox-column">
+                                        <input type="checkbox" id="selectAllCheckboxes" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    </th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>IP Address</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Time Taken</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <!-- Results will be loaded here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="paginationControls" class="flex justify-center mt-6 space-x-4">
+                        <button id="prevPageBtn" class="btn btn-primary" disabled>Previous</button>
+                        <span id="pageInfo" class="text-gray-700 dark:text-gray-300 flex items-center">Page 1 of 1</span>
+                        <button id="nextPageBtn" class="btn btn-primary" disabled>Next</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 dark:bg-gray-900 text-white p-6 mt-12 text-center rounded-t-xl shadow-inner">
+        <div class="container mx-auto">
+            <p>&copy; 2025 Digital Sathi Network. Admin Panel.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Backendless Initialization
+        const APP_ID = "66C73D7B-ACFE-470F-801D-3E67C7555D26";
+        const API_KEY = "5CC8E541-35C8-4EBC-A3D9-1AB07BC90906";
+        Backendless.initApp(APP_ID, API_KEY);
+
+        // --- Utility Functions ---
+        // Function to display a message box to the user
+        const showMessage = (message, type = 'info') => {
+            const messageBox = document.getElementById('messageBox');
+            const messageContent = document.getElementById('messageContent');
+            if (messageBox && messageContent) {
+                messageContent.textContent = message;
+                // Reset class list to ensure only relevant classes are applied
+                messageBox.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-700 dark:text-gray-200 p-4 rounded-lg shadow-lg z-50 transition-all duration-300';
+                messageBox.classList.add(type, 'show'); // Add type (error, success, info) and show class
+
+                // Hide message after 3 seconds
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000);
+            }
+        };
+
+        // --- Admin Panel State Variables ---
+        let isAdminLoggedIn = false;
+        let adminUsername = ''; // Stores the admin's email after login
+        let isMultiDeleteMode = false; // New: State to track multi-delete mode
+        
+        // Configuration for each mock test
+        const mockTestConfigs = [
+            { id: 'mocktest1', name: 'Mock Test 1', tableName: 'uos_mocktest1_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest2', name: 'Mock Test 2', tableName: 'uos_mocktest2_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest3', name: 'Mock Test 3', tableName: 'uos_mocktest3_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest4', name: 'Mock Test 4', tableName: 'uos_mocktest4_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest5', name: 'Mock Test 5', tableName: 'uos_mocktest5_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest6', name: 'Mock Test 6', tableName: 'uos_mocktest6_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest7', name: 'Mock Test 7', tableName: 'uos_mocktest7_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest8', name: 'Mock Test 8', tableName: 'uos_mocktest8_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest9', name: 'Mock Test 9', tableName: 'uos_mocktest9_result', currentPage: 1, filteredResults: [] },
+            { id: 'mocktest10', name: 'Mock Test 10', tableName: 'uos_mocktest10_result', currentPage: 1, filteredResults: [] }
+        ];
+
+        // Store fetched results, keyed by mock test ID. This will only store the data for the currently selected test.
+        let currentMockTestResults = []; 
+        let currentSelectedMockTestConfig = mockTestConfigs[0]; // Default to Mock Test 1
+
+        const resultsPerPage = 10; // Number of results to display per page
+        const passingMarks = 50; // Define passing marks for status calculation (e.g., 50 out of 100)
+        let isDarkMode = false; // State for dark mode
+
+        // --- DOM Elements ---
+        const adminLoginSection = document.getElementById('adminLoginSection');
+        const adminDashboardSection = document.getElementById('adminDashboardSection');
+        const adminUsernameInput = document.getElementById('adminUsername');
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const darkModeToggleBtn = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const darkModeText = document.getElementById('darkModeText');
+        
+        const mockTestSelector = document.getElementById('mockTestSelector'); // New: Dropdown selector
+        const currentMockTestTitle = document.getElementById('currentMockTestTitle'); // New: Title above the table
+        const totalRecordsCountSpan = document.getElementById('totalRecordsCount'); // New: Total Records Span
+
+        const resultsTableBody = document.getElementById('resultsTableBody');
+        const resultsTable = document.getElementById('resultsTable'); // Reference to the single table
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const pageInfoSpan = document.getElementById('pageInfo');
+
+        const savePdfBtn = document.getElementById('savePdfBtn');
+        const refreshDataBtn = document.getElementById('refreshDataBtn');
+        const deleteAllDataBtn = document.getElementById('deleteAllDataBtn');
+        const deleteMultipleUsersBtn = document.getElementById('deleteMultipleUsersBtn');
+        const actionButtonsContainer = document.getElementById('actionButtonsContainer'); // Container for action buttons
+
+        // New DOM elements for multi-delete
+        const checkboxHeader = document.getElementById('checkboxHeader');
+        const selectAllCheckboxes = document.getElementById('selectAllCheckboxes');
+
+
+        // --- Dark Mode Toggle Functionality ---
+        const toggleDarkMode = () => {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark', isDarkMode);
+            document.body.classList.toggle('bg-gray-900', isDarkMode);
+            document.body.classList.toggle('text-gray-100', isDarkMode);
+            document.body.classList.toggle('bg-gray-100', !isDarkMode);
+            document.body.classList.toggle('text-gray-900', !isDarkMode);
+            darkModeIcon.classList.toggle('fa-moon', !isDarkMode); // Change icon to sun in dark mode
+            darkModeIcon.classList.toggle('fa-sun', isDarkMode); // Change icon to moon in light mode
+            darkModeText.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode'; // Change text
+        };
+
+        // --- Admin Authentication Functions ---
+        const checkAdminSession = async () => {
+            try {
+                const currentUser = await Backendless.UserService.getCurrentUser();
+                if (currentUser && currentUser.userStatus === 'ENABLED') {
+                    isAdminLoggedIn = true;
+                    adminUsername = currentUser.email;
+                    showDashboard();
+                } else {
+                    showLogin();
+                }
+            } catch (error) {
+                console.log("No active admin session:", error.message);
+                showLogin();
+            }
+        };
+
+        const handleAdminLogin = async () => {
+            const email = adminUsernameInput.value.trim();
+            const password = adminPasswordInput.value.trim();
+
+            if (!email || !password) {
+                showMessage('Please enter both email and password.', 'error');
+                return;
+            }
+
+            try {
+                const user = await Backendless.UserService.login(email, password, true);
+                isAdminLoggedIn = true;
+                adminUsername = user.email;
+                showMessage(`Welcome!`, 'success');
+                showDashboard();
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage(`Login failed: ${error.message}`, 'error');
+            }
+        };
+
+        const handleAdminLogout = async () => {
+            try {
+                await Backendless.UserService.logout();
+                isAdminLoggedIn = false;
+                adminUsername = '';
+                showMessage('Logged out successfully.', 'info');
+                showLogin();
+            } catch (error) {
+                console.error('Logout error:', error);
+                showMessage('An error occurred during logout. Please try again.', 'error');
+            }
+        };
+
+        // --- Section Display Logic ---
+        const showLogin = () => {
+            adminLoginSection.classList.remove('hidden');
+            adminDashboardSection.classList.add('hidden');
+            adminUsernameInput.value = '';
+            adminPasswordInput.value = '';
+        };
+
+        const showDashboard = async () => {
+            adminLoginSection.classList.add('hidden');
+            adminDashboardSection.classList.remove('hidden');
+            populateMockTestSelector(); // Populate dropdown on dashboard load
+            // Automatically load the first mock test's data
+            await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id);
+        };
+
+        // --- Mock Test Selector Functions ---
+        const populateMockTestSelector = () => {
+            mockTestSelector.innerHTML = ''; // Clear existing options
+            mockTestConfigs.forEach(config => {
+                const option = document.createElement('option');
+                option.value = config.id;
+                option.textContent = config.name;
+                mockTestSelector.appendChild(option);
+            });
+            // Set the default selected option
+            mockTestSelector.value = currentSelectedMockTestConfig.id;
+        };
+
+        const updateGlobalButtonLabels = () => {
+            savePdfBtn.textContent = `Save ${currentSelectedMockTestConfig.name} PDF`;
+            deleteAllDataBtn.textContent = `Delete All ${currentSelectedMockTestConfig.name} Data`;
+            // Only update deleteMultipleUsersBtn if not in multi-delete mode
+            if (!isMultiDeleteMode) {
+                deleteMultipleUsersBtn.textContent = `Delete Multiple ${currentSelectedMockTestConfig.name} Users`;
+            }
+        };
+
+        // --- Quiz Results Management Functions ---
+        // Fetches and renders results for a specific mock test
+        const fetchAndRenderMockTestResults = async (mockTestId) => {
+            const config = mockTestConfigs.find(c => c.id === mockTestId);
+            if (!config) {
+                showMessage(`Mock Test configuration for ${mockTestId} not found.`, 'error');
+                return;
+            }
+            currentSelectedMockTestConfig = config; // Update the current selected config
+            currentMockTestTitle.textContent = `${config.name} Results`; // Update table title
+            updateGlobalButtonLabels(); // Update button labels
+
+            showMessage(`Fetching results for ${config.name}...`, 'info');
+            try {
+                const queryBuilder = Backendless.DataQueryBuilder.create()
+                    .setSortBy(["timestamp DESC"]);
+                
+                const results = await Backendless.Data.of(config.tableName).find(queryBuilder);
+                currentMockTestResults = results; // Store results for the currently selected test
+                config.filteredResults = results; // Update filtered results for the current config
+                config.currentPage = 1; // Reset to first page for the new selection
+                renderResultsTable(); // Render the table with the new data
+                showMessage(`Results for ${config.name} loaded.`, 'success');
+            } catch (error) {
+                console.error(`Error fetching quiz results for ${config.name}:`, error);
+                showMessage(`Failed to load quiz results for ${config.name}.`, 'error');
+                currentMockTestResults = []; // Clear results on error
+                config.filteredResults = [];
+                renderResultsTable(); // Render empty table
+            }
+        };
+
+        // Renders the quiz results table based on the currently selected mock test's data
+        const renderResultsTable = () => {
+            resultsTableBody.innerHTML = ''; // Clear existing table rows
+
+            const totalRecords = currentSelectedMockTestConfig.filteredResults.length;
+            totalRecordsCountSpan.textContent = totalRecords; // Update total records count
+
+            const totalPages = Math.ceil(totalRecords / resultsPerPage);
+            const startIndex = (currentSelectedMockTestConfig.currentPage - 1) * resultsPerPage;
+            const endIndex = startIndex + resultsPerPage;
+            const paginatedResults = currentSelectedMockTestConfig.filteredResults.slice(startIndex, endIndex);
+
+            // Toggle visibility of checkbox header
+            if (checkboxHeader) {
+                checkboxHeader.classList.toggle('hidden-checkbox-column', !isMultiDeleteMode);
+            }
+            if (selectAllCheckboxes) {
+                selectAllCheckboxes.checked = false; // Uncheck select all when re-rendering
+            }
+
+
+            if (paginatedResults.length === 0) {
+                // Colspan is 7 if checkbox column is hidden, 8 if visible
+                const colspan = isMultiDeleteMode ? 8 : 7; 
+                resultsTableBody.innerHTML = `<tr><td colspan="${colspan}" class="text-center py-4 text-gray-500 dark:text-gray-400">No results found for ${currentSelectedMockTestConfig.name}.</td></tr>`;
+            } else {
+                paginatedResults.forEach(result => {
+                    const passed = result.score >= passingMarks;
+                    const statusClass = passed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+                    const statusText = passed ? 'PASS' : 'FAIL';
+
+                    const row = resultsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td class="multi-delete-checkbox-cell ${isMultiDeleteMode ? '' : 'hidden-checkbox-column'}">
+                            <input type="checkbox" class="row-checkbox h-4 w-4 text-blue-600 rounded" data-object-id="${result.objectId}">
+                        </td>
+                        <td>${result.userName || 'N/A'}</td>
+                        <td>${result.userEmail || 'N/A'}</td>
+                        <td>${result.userIP || 'N/A'}</td>
+                        <td>${result.score || 0} / ${result.totalQuestions || 100}</td>
+                        <td class="font-bold ${statusClass}">${statusText}</td>
+                        <td>${formatTime(result.timeTakenSeconds || 0)}</td>
+                        <td>${new Date(result.timestamp).toLocaleString() || 'N/A'}</td>
+                    `;
+                });
+            }
+
+            updatePaginationControls(totalPages); // Update pagination button states and info
+        };
+
+        // Formats time from seconds into MM:SS format
+        const formatTime = (seconds) => {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        };
+
+        // Updates the pagination controls (page info, button disabled states)
+        const updatePaginationControls = (totalPages) => {
+            pageInfoSpan.textContent = `Page ${currentSelectedMockTestConfig.currentPage} of ${totalPages || 1}`;
+            prevPageBtn.disabled = currentSelectedMockTestConfig.currentPage === 1;
+            nextPageBtn.disabled = currentSelectedMockTestConfig.currentPage === totalPages || totalPages === 0;
+        };
+
+        // --- Multi-Delete Mode Functions ---
+        const toggleMultiDeleteMode = (enable) => {
+            isMultiDeleteMode = enable;
+
+            // Toggle visibility of checkbox column
+            if (checkboxHeader) {
+                checkboxHeader.classList.toggle('hidden-checkbox-column', !isMultiDeleteMode);
+            }
+            document.querySelectorAll('.multi-delete-checkbox-cell').forEach(cell => {
+                cell.classList.toggle('hidden-checkbox-column', !isMultiDeleteMode);
+            });
+
+            // Update Delete Multiple Users button text and create/remove Cancel button
+            if (isMultiDeleteMode) {
+                deleteMultipleUsersBtn.textContent = 'Confirm Deletion';
+                deleteMultipleUsersBtn.classList.remove('btn-primary');
+                deleteMultipleUsersBtn.classList.add('btn-danger');
+
+                const cancelButton = document.createElement('button');
+                cancelButton.id = 'cancelMultiDeleteBtn';
+                cancelButton.className = 'btn btn-secondary px-4 py-2';
+                cancelButton.innerHTML = '<i class="fas fa-times mr-2"></i> Cancel';
+                actionButtonsContainer.appendChild(cancelButton);
+
+                cancelButton.addEventListener('click', () => {
+                    toggleMultiDeleteMode(false); // Exit multi-delete mode
+                    renderResultsTable(); // Re-render to hide checkboxes
+                });
+
+                // Disable other buttons in multi-delete mode
+                refreshDataBtn.disabled = true;
+                savePdfBtn.disabled = true;
+                deleteAllDataBtn.disabled = true;
+                mockTestSelector.disabled = true;
+
+                // Add event listener for select all checkbox
+                if (selectAllCheckboxes) {
+                    selectAllCheckboxes.addEventListener('change', handleSelectAllCheckboxes);
+                }
+
+            } else {
+                deleteMultipleUsersBtn.textContent = `Delete Multiple ${currentSelectedMockTestConfig.name} Users`;
+                deleteMultipleUsersBtn.classList.remove('btn-danger');
+                deleteMultipleUsersBtn.classList.add('btn-primary');
+
+                const cancelButton = document.getElementById('cancelMultiDeleteBtn');
+                if (cancelButton) {
+                    cancelButton.remove();
+                }
+
+                // Re-enable other buttons
+                refreshDataBtn.disabled = false;
+                savePdfBtn.disabled = false;
+                deleteAllDataBtn.disabled = false;
+                mockTestSelector.disabled = false;
+
+                // Remove event listener for select all checkbox
+                if (selectAllCheckboxes) {
+                    selectAllCheckboxes.removeEventListener('change', handleSelectAllCheckboxes);
+                    selectAllCheckboxes.checked = false; // Ensure it's unchecked
+                }
+            }
+        };
+
+        const handleSelectAllCheckboxes = (event) => {
+            const isChecked = event.target.checked;
+            document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+        };
+
+        // --- Global Button Functionality ---
+
+        const handleRefreshData = async () => {
+            showMessage(`Refreshing data for ${currentSelectedMockTestConfig.name}...`, 'info');
+            await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id);
+            showMessage(`Data for ${currentSelectedMockTestConfig.name} refreshed!`, 'success');
+        };
+
+        const handleDeleteAllData = async () => {
+            if (confirm(`Are you absolutely sure you want to delete ALL quiz results for ${currentSelectedMockTestConfig.name}? This action cannot be undone!`)) {
+                showMessage(`Deleting all data for ${currentSelectedMockTestConfig.name}...`, 'info');
+                try {
+                    const queryBuilder = Backendless.DataQueryBuilder.create().setProperties(["objectId"]);
+                    const allRecords = await Backendless.Data.of(currentSelectedMockTestConfig.tableName).find(queryBuilder);
+
+                    if (allRecords.length === 0) {
+                        showMessage(`No data to delete for ${currentSelectedMockTestConfig.name}.`, 'info');
+                        return;
+                    }
+
+                    const batchSize = 50;
+                    for (let i = 0; i < allRecords.length; i += batchSize) {
+                        const batch = allRecords.slice(i, i + batchSize);
+                        const objectIdsToDelete = batch.map(record => record.objectId);
+                        await Backendless.Data.of(currentSelectedMockTestConfig.tableName).remove(objectIdsToDelete);
+                    }
+                    
+                    showMessage(`All quiz results for ${currentSelectedMockTestConfig.name} deleted successfully!`, 'success');
+                    await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id); // Re-fetch and re-render
+                } catch (error) {
+                    console.error(`Error deleting all data for ${currentSelectedMockTestConfig.name}:`, error);
+                    showMessage(`Failed to delete all data for ${currentSelectedMockTestConfig.name}: ${error.message}`, 'error');
+                }
+            } else {
+                showMessage('Deletion cancelled.', 'info');
+            }
+        };
+
+        const handleDeleteMultipleUsers = async () => {
+            if (isMultiDeleteMode) {
+                // Confirm deletion
+                const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+                const objectIdsToDelete = Array.from(selectedCheckboxes).map(cb => cb.dataset.objectId);
+
+                if (objectIdsToDelete.length === 0) {
+                    showMessage('No users selected for deletion.', 'info');
+                    return;
+                }
+
+                if (!confirm(`Are you sure you want to delete ${objectIdsToDelete.length} selected user(s) from ${currentSelectedMockTestConfig.name}?`)) {
+                    showMessage('Deletion cancelled.', 'info');
+                    return;
+                }
+
+                showMessage(`Deleting ${objectIdsToDelete.length} selected user(s) from ${currentSelectedMockTestConfig.name}...`, 'info');
+                try {
+                    // Backendless remove method can take an array of objectIds for bulk removal
+                    await Backendless.Data.of(currentSelectedMockTestConfig.tableName).remove(objectIdsToDelete);
+                    showMessage(`Successfully deleted ${objectIdsToDelete.length} selected user(s) from ${currentSelectedMockTestConfig.name}!`, 'success');
+                } catch (error) {
+                    console.error(`Error deleting selected users from ${currentSelectedMockTestConfig.name}:`, error);
+                    showMessage(`Failed to delete selected users from ${currentSelectedMockTestConfig.name}: ${error.message}`, 'error');
+                } finally {
+                    toggleMultiDeleteMode(false); // Exit multi-delete mode
+                    await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id); // Re-fetch and re-render
+                }
+
+            } else {
+                // Enter multi-delete mode
+                toggleMultiDeleteMode(true);
+                renderResultsTable(); // Re-render to show checkboxes
+            }
+        };
+
+        // --- PDF Generation Function ---
+        const generatePdf = async () => {
+            const { jsPDF } = window.jspdf;
+            
+            // Target the single results table
+            const inputTable = document.getElementById('resultsTable'); 
+
+            // Create a temporary container for the table to ensure it's rendered completely for PDF
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px'; // Move off-screen
+            document.body.appendChild(tempDiv);
+
+            // Create a clone of the table structure
+            const clonedTable = inputTable.cloneNode(true);
+            clonedTable.id = 'tempPdfTable'; // Assign a temporary ID
+            
+            // Remove the checkbox column header from the cloned table for PDF export
+            const clonedTableHeaderRow = clonedTable.querySelector('thead tr');
+            if (clonedTableHeaderRow && clonedTableHeaderRow.children[0] && clonedTableHeaderRow.children[0].id === 'checkboxHeader') {
+                clonedTableHeaderRow.removeChild(clonedTableHeaderRow.children[0]);
+            }
+
+            // Clear existing tbody content from the clone
+            const clonedTableBody = clonedTable.querySelector('tbody');
+            clonedTableBody.innerHTML = '';
+
+            // Get the cloned table header (thead) and apply styling
+            const clonedTableHeader = clonedTable.querySelector('thead');
+            if (clonedTableHeader) {
+                const headerCells = Array.from(clonedTableHeader.querySelectorAll('th'));
+                
+                headerCells.forEach(th => {
+                    th.style.backgroundColor = '#007bff'; // Blue background
+                    th.style.color = 'white'; // White text
+                    th.style.padding = '0.75rem'; // Maintain padding
+                    th.style.textAlign = 'left'; // Maintain text alignment
+                    th.style.borderBottom = '1px solid #e2e8f0'; // Maintain border
+                });
+            }
+            
+            // Populate the cloned table's tbody with *all* results for the currently selected mock test
+            const resultsToExport = currentSelectedMockTestConfig.filteredResults; 
+            if (resultsToExport && resultsToExport.length === 0) {
+                clonedTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">No results to export for ${currentSelectedMockTestConfig.name}.</td></tr>`; 
+            } else {
+                resultsToExport.forEach(result => {
+                    const passed = result.score >= passingMarks;
+                    const statusText = passed ? 'PASS' : 'FAIL';
+
+                    const row = clonedTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${result.userName || 'N/A'}</td>
+                        <td>${result.userEmail || 'N/A'}</td>
+                        <td>${result.userIP || 'N/A'}</td>
+                        <td>${result.score || 0} / ${result.totalQuestions || 100}</td>
+                        <td>${statusText}</td>
+                        <td>${formatTime(result.timeTakenSeconds || 0)}</td>
+                        <td>${new Date(result.timestamp).toLocaleString() || 'N/A'}</td>
+                    `;
+                });
+            }
+
+            // Remove checkbox cells from cloned table rows for PDF export
+            Array.from(clonedTable.querySelectorAll('.multi-delete-checkbox-cell')).forEach(cell => {
+                cell.remove();
+            });
+
+
+            tempDiv.appendChild(clonedTable); // Add the cloned table to the temporary div
+
+            try {
+                showMessage(`Generating PDF for ${currentSelectedMockTestConfig.name}...`, 'info');
+                const canvas = await html2canvas(clonedTable, { scale: 2 });
+                const imgData = canvas.toDataURL('image/png');
+
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                
+                // Add custom heading to the PDF
+                const marginX = 10;
+                let currentY = 10;
+
+                pdf.setFontSize(14);
+                pdf.text("University of Sindh Pre-Entry Test Mock Test For Batch 2k26", pdf.internal.pageSize.getWidth() / 2, currentY, { align: 'center' });
+                currentY += 7; // Line spacing
+
+                pdf.setFontSize(10);
+                pdf.text("Powered by Digital Sathi Network", pdf.internal.pageSize.getWidth() / 2, currentY, { align: 'center' });
+                currentY += 10; // Line spacing
+
+                pdf.setFontSize(12);
+                pdf.text(`${currentSelectedMockTestConfig.name} Results`, pdf.internal.pageSize.getWidth() / 2, currentY, { align: 'center' });
+                currentY += 10; // Line spacing before table
+
+                // Calculate image height while maintaining aspect ratio
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = currentY; // Start position after heading
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= (pageHeight - currentY); // Adjust heightLeft for first page content
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                pdf.save(`${currentSelectedMockTestConfig.id}_results.pdf`);
+                showMessage(`PDF for ${currentSelectedMockTestConfig.name} generated successfully!`, 'success');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showMessage('Failed to generate PDF. Please try again.', 'error');
+            } finally {
+                document.body.removeChild(tempDiv); // Clean up the temporary div
+            }
+        };
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminSession(); // Check admin session on page load
+
+            // Login/Logout event listeners
+            adminLoginBtn.addEventListener('click', handleAdminLogin);
+            logoutBtn.addEventListener('click', handleAdminLogout);
+            
+            // Dark mode toggle event listener
+            darkModeToggleBtn.addEventListener('click', toggleDarkMode);
+
+            // Mock Test Selector event listener
+            mockTestSelector.addEventListener('change', (event) => {
+                const selectedMockTestId = event.target.value;
+                fetchAndRenderMockTestResults(selectedMockTestId);
+            });
+
+            // Global action button event listeners
+            savePdfBtn.addEventListener('click', generatePdf);
+            refreshDataBtn.addEventListener('click', handleRefreshData);
+            deleteAllDataBtn.addEventListener('click', handleDeleteAllData);
+            deleteMultipleUsersBtn.addEventListener('click', handleDeleteMultipleUsers);
+
+            // Select All Checkbox listener
+            if (selectAllCheckboxes) {
+                selectAllCheckboxes.addEventListener('change', handleSelectAllCheckboxes);
+            }
+
+            // Pagination event listeners for the single table
+            prevPageBtn.addEventListener('click', () => {
+                if (currentSelectedMockTestConfig.currentPage > 1) {
+                    currentSelectedMockTestConfig.currentPage--;
+                    renderResultsTable();
+                }
+            });
+            nextPageBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(currentSelectedMockTestConfig.filteredResults.length / resultsPerPage);
+                if (currentSelectedMockTestConfig.currentPage < totalPages) {
+                    currentSelectedMockTestConfig.currentPage++;
+                    renderResultsTable();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

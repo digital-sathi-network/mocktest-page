@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UoS Mock Test 1 - Digital Sathi Network</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Backendless SDK CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/backendless@7.4.7/dist/backendless.min.js"></script>
+    <!-- PDF Generation Libraries (Removed) -->
+    <style>
+        /* Custom CSS for base styles and overrides */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .dark .card {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .btn {
+            border-radius: 9999px; /* Full rounded */
+            padding: 12px 24px;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        input[type="text"], input[type="email"], input[type="password"] {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            width: 100%;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        .dark input[type="text"], .dark input[type="email"], .dark input[type="password"] {
+            background-color: #4a5568;
+            border-color: #6b7280;
+            color: #e2e8f0;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .option-label {
+            display: block;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .dark .option-label {
+            border-color: #4a5568;
+        }
+        .option-label:hover {
+            background-color: #f0f4f8;
+        }
+        .dark .option-label:hover {
+            background-color: #2d3748;
+        }
+        input[type="radio"]:checked + .option-label {
+            background-color: #d1e7dd; /* Light green for selected */
+            border-color: #28a745;
+        }
+        .dark input[type="radio"]:checked + .option-label {
+            background-color: #1a472a; /* Darker green for selected */
+            border-color: #28a745;
+        }
+        .question-palette-item {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            color: #4a5568;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        .dark .question-palette-item {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        .question-palette-item:hover {
+            background-color: #cbd5e0;
+        }
+        .dark .question-palette-item:hover {
+            background-color: #6b7280;
+        }
+        .question-palette-item.current {
+            background-color: #007bff;
+            color: white;
+        }
+        .dark .question-palette-item.current {
+            background-color: #0056b3;
+        }
+        .question-palette-item.answered {
+            background-color: #28a745;
+            color: white;
+        }
+        .dark .question-palette-item.answered {
+            background-color: #1a472a;
+        }
+        .question-palette-item.flagged {
+            background-color: #ffc107; /* Yellow for flagged */
+            color: #333;
+            border: 2px solid #e0a800;
+        }
+        .dark .question-palette-item.flagged {
+            background-color: #d97706; /* Darker yellow for flagged */
+            color: white;
+            border: 2px solid #b45309;
+        }
+
+        /* Message Box Styling */
+        #messageBox {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 0;
+            transform: translate(-50%, -20px);
+            min-width: 250px;
+            text-align: center;
+            pointer-events: none;
+        }
+        #messageBox.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+            pointer-events: auto;
+        }
+        .dark #messageBox {
+            background-color: #2d3748;
+            color: #e2e8f0;
+        }
+        #messageBox.error { border-left: 4px solid #dc3545; }
+        #messageBox.success { border-left: 4px solid #28a745; }
+        #messageBox.info { border-left: 4px solid #007bff; }
+
+        /* New styles for question palette container and scroll buttons */
+        .question-palette-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Space between buttons and palette */
+        }
+        .scroll-button {
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: background-color 0.2s ease;
+            flex-shrink: 0; /* Prevent buttons from shrinking */
+        }
+        .scroll-button:hover {
+            background-color: #0056b3;
+        }
+        .dark .scroll-button {
+            background-color: #0056b3;
+        }
+        .dark .scroll-button:hover {
+            background-color: #003f8a;
+        }
+        /* Ensure the palette itself can scroll horizontally */
+        #questionPalette {
+            overflow-x: auto;
+            white-space: nowrap; /* Keep items in a single line */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+        }
+        /* Hide scrollbar for aesthetics */
+        #questionPalette::-webkit-scrollbar {
+            display: none;
+        }
+        #questionPalette {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 transition-colors duration-300">
+    <!-- Message Box -->
+    <div id="messageBox">
+        <p id="messageContent" class="font-semibold"></p>
+    </div>
+
+    <header class="bg-blue-600 dark:bg-blue-800 text-white p-6 shadow-lg rounded-b-xl">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex-grow text-center">
+                <h1 class="text-2xl font-bold">
+                    University of Sindh Pre-Entry Test Mock Test 1 For Batch 2k26
+                    <br>
+                    <span class="text-lg font-normal">Powered by Digital Sathi Network</span>
+                </h1>
+            </div>
+            <button id="darkModeToggle" class="bg-blue-700 hover:bg-blue-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-full shadow-md transition-colors duration-300 flex items-center">
+                <i class="fas fa-moon mr-2" id="darkModeIcon"></i>
+                <span id="darkModeText">Dark Mode</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-8 px-4">
+        <!-- Password Prompt Section -->
+        <section id="passwordSection">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-bold mb-6 text-blue-600 dark:text-blue-400">University of Sindh Pre-Entry Test Mock Test 1</h2>
+                <div class="mb-4">
+                    <label for="passwordInput" class="block text-left text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Password:</label>
+                    <input type="password" id="passwordInput" class="form-input" placeholder="Enter password">
+                </div>
+                <button id="passwordSubmitBtn" class="btn btn-primary w-full">Submit Password</button>
+            </div>
+        </section>
+
+        <!-- User Info Prompt Section -->
+        <section id="userInfoSection" class="hidden">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-bold mb-6 text-blue-600 dark:text-blue-400">Enter Your Details</h2>
+                <div class="mb-4">
+                    <label for="userNameInput" class="block text-left text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Your Name:</label>
+                    <input type="text" id="userNameInput" class="form-input" placeholder="e.g., Ali Khan">
+                </div>
+                <div class="mb-6">
+                    <label for="userEmailInput" class="block text-left text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Your Email:</label>
+                    <input type="email" id="userEmailInput" class="form-input" placeholder="e.g., yourname@example.com">
+                </div>
+                <button id="userInfoSubmitBtn" class="btn btn-primary w-full">Start Quiz</button>
+            </div>
+        </section>
+
+        <!-- Quiz Interface Section -->
+        <section id="quizSection" class="hidden">
+            <div class="col-span-full lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        Question <span id="currentQuestionNumber">1</span> / <span id="totalQuestionsCount">100</span>
+                    </h3>
+                    <div class="flex items-center bg-blue-100 dark:bg-blue-900 p-2 px-4 rounded-full">
+                        <i class="fas fa-clock text-blue-600 dark:text-blue-400 text-lg mr-2"></i>
+                        <p class="text-lg font-bold text-blue-800 dark:text-blue-200">Time Left: <span id="timerDisplay">90:00</span></p>
+                    </div>
+                </div>
+                <div id="questionDisplay" class="mb-8"></div>
+                <div class="flex justify-center space-x-4 mt-8">
+                    <button id="prevQuestionBtn" class="btn btn-info px-4 py-2 text-sm">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    <button id="flagQuestionBtn" class="btn btn-danger px-4 py-2 text-sm">
+                        <i class="fas fa-flag mr-2"></i> Flag Question
+                    </button>
+                    <button id="nextQuestionBtn" class="btn btn-info px-4 py-2 text-sm">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Question Palette Section -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6">
+                    <h4 class="text-lg font-bold mb-3 text-blue-600 dark:text-blue-400">Question Palette</h4>
+                    <div class="question-palette-nav">
+                        <button id="scrollLeftBtn" class="scroll-button">◀</button>
+                        <div id="questionPalette" class="flex gap-2 flex-grow pb-2 scroll-smooth"></div>
+                        <button id="scrollRightBtn" class="scroll-button">▶</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Result Display Section -->
+        <section id="resultSection" class="hidden">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center" id="resultContent">
+                <h2 class="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">Test Results</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <p class="text-gray-700 dark:text-gray-300 font-semibold">Your Score:</p>
+                        <p class="text-4xl font-bold text-blue-700 dark:text-blue-300"><span id="finalScore">0</span> / 100</p>
+                    </div>
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <p class="text-gray-700 dark:text-gray-300 font-semibold">Time Taken:</p>
+                        <p class="text-3xl font-bold text-blue-700 dark:text-blue-300"><span id="timeTakenDisplay">00:00</span></p>
+                    </div>
+                </div>
+                <div id="passFailStatus" class="p-4 rounded-lg text-2xl font-bold mb-8"></div>
+                <div id="resultButtons" class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <button id="reviewAnswersBtn" class="btn btn-info">
+                        <i class="fas fa-eye mr-2"></i> Review Answers
+                    </button>
+                    <!-- Removed Save as PDF button -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Review Answers Section -->
+        <section id="reviewSection" class="hidden">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400 text-center">Review Your Answers</h2>
+                <div id="reviewQuestionsContainer"></div>
+                <button id="backToResultBtn" class="btn btn-primary mt-8 mx-auto block">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Results
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 dark:bg-gray-900 text-white p-6 mt-12 text-center rounded-t-xl shadow-inner">
+        <div class="container mx-auto">
+            <p>&copy; 2025 Digital Sathi Network. All rights reserved.</p>
+            <p class="mt-2">For more information, contact us on WhatsApp: <a href="https://wa.me/+923030343259" class="text-blue-400 hover:underline">+92 303 0343259</a></p>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Backendless Initialization
+        const APP_ID = "66C73D7B-ACFE-470F-801D-3E67C7555D26";
+        const API_KEY = "5CC8E541-35C8-4EBC-A3D9-1AB07BC90906";
+        Backendless.initApp(APP_ID, API_KEY);
+
+        // Utility function for a simple modal/alert replacement
+        const showMessage = (message, type = 'info') => {
+            const messageBox = document.getElementById('messageBox');
+            const messageContent = document.getElementById('messageContent');
+            if (messageBox && messageContent) {
+                messageContent.textContent = message;
+                messageBox.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-700 dark:text-gray-200 p-4 rounded-lg shadow-lg z-50 transition-all duration-300';
+                messageBox.classList.add(type, 'show');
+
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000);
+            }
+        };
+
+        // Function to get user's IP address
+        const getUserIP = async () => {
+            try {
+                // Using an external service to get the IP address
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error("Error fetching IP address:", error);
+                return null;
+            }
+        };
+
+        // Quiz Data and Settings
+        const quizQuestions = [
+    {
+        id: 1,
+        question: "Choose the correct spelling:",
+        options: ["Occassion", "Occasion", "Occation", "Ocassion"],
+        correctAnswer: 1
+    },
+    {
+        id: 2,
+        question: "Synonym of \"Abundant\" is:",
+        options: ["Scarce", "Little", "Plentiful", "None"],
+        correctAnswer: 2
+    },
+    {
+        id: 3,
+        question: "She ____ to the market every morning.",
+        options: ["go", "going", "goes", "gone"],
+        correctAnswer: 2
+    },
+    {
+        id: 4,
+        question: "Choose the antonym of \"Brave\":",
+        options: ["Coward", "Hero", "Soldier", "Warrior"],
+        correctAnswer: 0
+    },
+    {
+        id: 5,
+        question: "Identify the correct sentence:",
+        options: ["He don't like mangoes.", "He doesn't likes mangoes.", "He doesn't like mangoes.", "He no like mangoes."],
+        correctAnswer: 2
+    },
+    {
+        id: 6,
+        question: "Plural of \"Crisis\" is:",
+        options: ["Crises", "Crisis", "Criseses", "Crisae"],
+        correctAnswer: 0
+    },
+    {
+        id: 7,
+        question: "Which sentence is in passive voice?",
+        options: ["He plays football.", "Football is played by him.", "He playing football.", "He played football."],
+        correctAnswer: 1
+    },
+    {
+        id: 8,
+        question: "Correct the sentence: \"He go to school yesterday.\"",
+        options: ["He gone to school yesterday.", "He went to school yesterday.", "He goes to school yesterday.", "He go yesterday to school."],
+        correctAnswer: 1
+    },
+    {
+        id: 9,
+        question: "Choose the correct preposition: \"He is fond ___ music.\"",
+        options: ["in", "at", "of", "to"],
+        correctAnswer: 2
+    },
+    {
+        id: 10,
+        question: "Select the correct article: \"___ Earth moves around the sun.\"",
+        options: ["A", "An", "The", "No article"],
+        correctAnswer: 2
+    },
+    {
+        id: 11,
+        question: "Which of the following is a noun?",
+        options: ["Jump", "Quickly", "Honesty", "Run"],
+        correctAnswer: 2
+    },
+    {
+        id: 12,
+        question: "What is the comparative degree of \"Good\"?",
+        options: ["More good", "Better", "Gooder", "Best"],
+        correctAnswer: 1
+    },
+    {
+        id: 13,
+        question: "Identify the adjective:",
+        options: ["Beautiful", "Slowly", "Sadly", "Jump"],
+        correctAnswer: 0
+    },
+    {
+        id: 14,
+        question: "Choose the correct modal verb: \"You ___ obey your elders.\"",
+        options: ["could", "would", "should", "might"],
+        correctAnswer: 2
+    },
+    {
+        id: 15,
+        question: "Choose the synonym of \"Rapid\":",
+        options: ["Slow", "Lazy", "Fast", "Calm"],
+        correctAnswer: 2
+    },
+    {
+        id: 16,
+        question: "Which country has the largest Muslim population?",
+        options: ["Saudi Arabia", "Pakistan", "Indonesia", "Iran"],
+        correctAnswer: 2
+    },
+    {
+        id: 17,
+        question: "Who was the first female Prime Minister of the Muslim world?",
+        options: ["Indira Gandhi", "Benazir Bhutto", "Fatima Jinnah", "Angela Merkel"],
+        correctAnswer: 1
+    },
+    {
+        id: 18,
+        question: "The Nobel Prize is awarded in how many categories?",
+        options: ["5", "6", "7", "4"],
+        correctAnswer: 1
+    },
+    {
+        id: 19,
+        question: "Which is the world’s largest desert?",
+        options: ["Gobi", "Kalahari", "Antarctica", "Sahara"],
+        correctAnswer: 2
+    },
+    {
+        id: 20,
+        question: "Which gas is most abundant in Earth’s atmosphere?",
+        options: ["Oxygen", "Hydrogen", "Nitrogen", "Carbon dioxide"],
+        correctAnswer: 2
+    },
+    {
+        id: 21,
+        question: "Currency of Japan is:",
+        options: ["Yen", "Won", "Yuan", "Dollar"],
+        correctAnswer: 0
+    },
+    {
+        id: 22,
+        question: "First human to journey into outer space was:",
+        options: ["Neil Armstrong", "Yuri Gagarin", "Buzz Aldrin", "John Glenn"],
+        correctAnswer: 1
+    },
+    {
+        id: 23,
+        question: "Which planet has the most moons?",
+        options: ["Earth", "Saturn", "Mars", "Jupiter"],
+        correctAnswer: 1
+    },
+    {
+        id: 24,
+        question: "The Great Wall of China was built to:",
+        options: ["Mark borders", "Keep out invaders", "Collect taxes", "None of these"],
+        correctAnswer: 1
+    },
+    {
+        id: 25,
+        question: "Mount Everest is located in:",
+        options: ["China", "India", "Nepal", "Pakistan"],
+        correctAnswer: 2
+    },
+    {
+        id: 26,
+        question: "The coldest place on Earth is:",
+        options: ["Alaska", "Antarctica", "Siberia", "Iceland"],
+        correctAnswer: 1
+    },
+    {
+        id: 27,
+        question: "UNO stands for:",
+        options: ["United Nations Organization", "Union of Nations Official", "Universal Nation Order", "United Nation Office"],
+        correctAnswer: 0
+    },
+    {
+        id: 28,
+        question: "International Court of Justice is located in:",
+        options: ["Paris", "New York", "The Hague", "Geneva"],
+        correctAnswer: 2
+    },
+    {
+        id: 29,
+        question: "How many continents are there in the world?",
+        options: ["5", "6", "7", "8"],
+        correctAnswer: 2
+    },
+    {
+        id: 30,
+        question: "Largest ocean in the world is:",
+        options: ["Indian Ocean", "Atlantic Ocean", "Arctic Ocean", "Pacific Ocean"],
+        correctAnswer: 3
+    },
+    {
+        id: 31,
+        question: "What is the derivative of x³?",
+        options: ["2x", "x²", "3x²", "x³"],
+        correctAnswer: 2
+    },
+    {
+        id: 32,
+        question: "Solve: (3x - 2)(x + 4) = ?",
+        options: ["3x² + 10x - 8", "3x² - 10x - 8", "3x² - 12x + 8", "None"],
+        correctAnswer: 0
+    },
+    {
+        id: 33,
+        question: "Limit of (1 + 1/n)ⁿ as n approaches infinity?",
+        options: ["1", "Infinity", "e", "0"],
+        correctAnswer: 2
+    },
+    {
+        id: 34,
+        question: "What is the value of sin(90°)?",
+        options: ["1", "0", "-1", "undefined"],
+        correctAnswer: 0
+    },
+    {
+        id: 35,
+        question: "If log x = 1, then x = ?",
+        options: ["1", "10", "0", "100"],
+        correctAnswer: 1
+    },
+    {
+        id: 36,
+        question: "A train moves at 60 km/h. How far will it travel in 45 minutes?",
+        options: ["40 km", "45 km", "50 km", "45 km"],
+        correctAnswer: 3
+    },
+    {
+        id: 37,
+        question: "Simplify: (2x²y)(3xy²) = ?",
+        options: ["6x³y³", "5x²y²", "6x²y²", "6x²y³"],
+        correctAnswer: 0
+    },
+    {
+        id: 38,
+        question: "1/0 is:",
+        options: ["0", "Undefined", "1", "Infinity"],
+        correctAnswer: 1
+    },
+    {
+        id: 39,
+        question: "Which of the following is a prime number?",
+        options: ["9", "15", "23", "21"],
+        correctAnswer: 2
+    },
+    {
+        id: 40,
+        question: "What is 7C3 (Combinations)?",
+        options: ["35", "21", "28", "14"],
+        correctAnswer: 0
+    },
+    {
+        id: 41,
+        question: "Area of circle formula is:",
+        options: ["2πr", "πr²", "πd", "2rπ"],
+        correctAnswer: 1
+    },
+    {
+        id: 42,
+        question: "(x + y)² = ?",
+        options: ["x² + y²", "x² + y² + 2xy", "x² + 2y²", "None"],
+        correctAnswer: 1
+    },
+    {
+        id: 43,
+        question: "If x : y = 3 : 5, then (x + y) = ? (given x = 9)",
+        options: ["15", "24", "18", "30"],
+        correctAnswer: 1
+    },
+    {
+        id: 44,
+        question: "Convert 0.75 into fraction:",
+        options: ["1/2", "3/4", "2/3", "5/6"],
+        correctAnswer: 1
+    },
+    {
+        id: 45,
+        question: "A bag has 3 red and 5 blue balls. Probability of red ball?",
+        options: ["3/8", "1/2", "5/8", "1/3"],
+        correctAnswer: 0
+    },
+    {
+        id: 46,
+        question: "What is the chemical formula of water?",
+        options: ["H2", "H2O", "O2", "HO2"],
+        correctAnswer: 1
+    },
+    {
+        id: 47,
+        question: "Human blood is red due to the presence of:",
+        options: ["Plasma", "Hemoglobin", "White cells", "Carbon"],
+        correctAnswer: 1
+    },
+    {
+        id: 48,
+        question: "Which vitamin is produced in human skin in sunlight?",
+        options: ["Vitamin A", "Vitamin B12", "Vitamin D", "Vitamin K"],
+        correctAnswer: 2
+    },
+    {
+        id: 49,
+        question: "The unit of force is:",
+        options: ["Watt", "Pascal", "Newton", "Joule"],
+        correctAnswer: 2
+    },
+    {
+        id: 50,
+        question: "Which organ controls the body functions?",
+        options: ["Liver", "Heart", "Brain", "Kidney"],
+        correctAnswer: 2
+    },
+    {
+        id: 51,
+        question: "Which gas is used in soft drinks?",
+        options: ["Oxygen", "Hydrogen", "Carbon Dioxide", "Methane"],
+        correctAnswer: 2
+    },
+    {
+        id: 52,
+        question: "Plants prepare food by:",
+        options: ["Respiration", "Germination", "Photosynthesis", "Digestion"],
+        correctAnswer: 2
+    },
+    {
+        id: 53,
+        question: "The smallest unit of life is:",
+        options: ["Tissue", "Atom", "Organ", "Cell"],
+        correctAnswer: 3
+    },
+    {
+        id: 54,
+        question: "The human eye is sensitive to which radiation?",
+        options: ["UV", "Infrared", "Visible Light", "Gamma rays"],
+        correctAnswer: 2
+    },
+    {
+        id: 55,
+        question: "Boiling point of water on Celsius scale is:",
+        options: ["90°C", "80°C", "100°C", "120°C"],
+        correctAnswer: 2
+    },
+    {
+        id: 56,
+        question: "Which of the following is NOT a greenhouse gas?",
+        options: ["CO2", "O3", "CH4", "O2"],
+        correctAnswer: 3
+    },
+    {
+        id: 57,
+        question: "  Earth completes one rotation in:",
+        options: ["12 hours", "24 hours", "48 hours", "365 days"],
+        correctAnswer: 1
+    },
+    {
+        id: 58,
+        question: "Which acid is present in lemon?",
+        options: ["Hydrochloric acid", "Acetic acid", "Citric acid", "Sulfuric acid"],
+        correctAnswer: 2
+    },
+    {
+        id: 59,
+        question: "Which metal is liquid at room temperature?",
+        options: ["Iron", "Lead", "Mercury", "Copper"],
+        correctAnswer: 2
+    },
+    {
+        id: 60,
+        question: "Which part of the plant conducts photosynthesis?",
+        options: ["Root", "Stem", "Leaf", "Flower"],
+        correctAnswer: 2
+    },
+    {
+        id: 61,
+        question: "2, 4, 8, 16, __ ?",
+        options: ["20", "24", "30", "32"],
+        correctAnswer: 3
+    },
+    {
+        id: 62,
+        question: "Which does not belong in the group? Apple, Banana, Mango, Carrot",
+        options: ["Apple", "Mango", "Banana", "Carrot"],
+        correctAnswer: 3
+    },
+    {
+        id: 63,
+        question: "If CAT = 24, and BAT = 23, then RAT = ?",
+        options: ["40", "39", "36", "30"],
+        correctAnswer: 1
+    },
+    {
+        id: 64,
+        question: "Mirror image of 6:45 will show:",
+        options: ["5:15", "6:15", "7:15", "6:45"],
+        correctAnswer: 0
+    },
+    {
+        id: 65,
+        question: "Find the odd one out:",
+        options: ["121", "144", "169", "132"],
+        correctAnswer: 3
+    },
+    {
+        id: 66,
+        question: "If A=1, B=2, ..., Z=26, then what is the value of “ACE”?",
+        options: ["9", "10", "11", "12"],
+        correctAnswer: 0
+    },
+    {
+        id: 67,
+        question: "A man is facing north. He turns 90° right, then 180° left. Which direction is he facing?",
+        options: ["West", "North", "East", "South"],
+        correctAnswer: 0
+    },
+    {
+        id: 68,
+        question: "Complete the series: 5, 10, 20, 40, ?",
+        options: ["60", "70", "80", "100"],
+        correctAnswer: 2
+    },
+    {
+        id: 69,
+        question: "If 1=3, 2=3, 3=5, 4=4, 5=4, then 6=?",
+        options: ["3", "4", "5", "6"],
+        correctAnswer: 1
+    },
+    {
+        id: 70,
+        question: "Count the number of triangles in a pentagon divided with diagonals:",
+        options: ["5", "7", "10", "8"],
+        correctAnswer: 2
+    },
+    {
+        id: 71,
+        question: "What comes next: AZ, BY, CX, ___?",
+        options: ["DU", "DV", "EW", "DX"],
+        correctAnswer: 1
+    },
+    {
+        id: 72,
+        question: "If 3 people can do a job in 12 days, how many days will 6 people take?",
+        options: ["24", "6", "3", "12"],
+        correctAnswer: 1
+    },
+    {
+        id: 73,
+        question: "If TABLE = GZYOV, then CHAIR = ?",
+        options: ["XSZRM", "XTYRQ", "YTZRN", "YSYPQ"],
+        correctAnswer: 0
+    },
+    {
+        id: 74,
+        question: "Which number is missing: 36, 34, 30, 28, 24, ?",
+        options: ["22", "20", "18", "16"],
+        correctAnswer: 1
+    },
+    {
+        id: 75,
+        question: "In a row of students, Ali is 10th from the left and 15th from the right. How many students are there in total?",
+        options: ["25", "24", "26", "27"],
+        correctAnswer: 2
+    },
+    {
+        id: 76,
+        question: "When did Pakistan become a member of the United Nations?",
+        options: ["15 August 1947", "30 June 1948", "13 August 1947", "30 September 1947"],
+        correctAnswer: 3
+    },
+    {
+        id: 77,
+        question: "Who was the first Governor-General of Pakistan?",
+        options: ["Liaquat Ali Khan", "Allama Iqbal", "Muhammad Ali Jinnah", "Khawaja Nazimuddin"],
+        correctAnswer: 2
+    },
+    {
+        id: 78,
+        question: "Objective Resolution was passed in:",
+        options: ["1947", "1948", "1949", "1950"],
+        correctAnswer: 2
+    },
+    {
+        id: 79,
+        question: "Pakistan’s first constitution was enforced in:",
+        options: ["1950", "1952", "1956", "1958"],
+        correctAnswer: 2
+    },
+    {
+        id: 80,
+        question: "Indus Waters Treaty was signed in:",
+        options: ["1960", "1956", "1965", "1970"],
+        correctAnswer: 0
+    },
+    {
+        id: 81,
+        question: "Who was the first female Governor of the State Bank of Pakistan?",
+        options: ["Shamshad Akhtar", "Rukhsana Yasmeen", "Hina Rabbani", "Maleeha Lodhi"],
+        correctAnswer: 0
+    },
+    {
+        id: 82,
+        question: "Pakistan’s largest province by area is:",
+        options: ["Sindh", "Punjab", "Balochistan", "KPK"],
+        correctAnswer: 2
+    },
+    {
+        id: 83,
+        question: "Name the operation launched in 1998 against nuclear proliferation?",
+        options: ["Zarb-e-Azb", "Chagai-I", "Sunrise", "None"],
+        correctAnswer: 1
+    },
+    {
+        id: 84,
+        question: "Simla Agreement was signed between Pakistan and India in:",
+        options: ["1971", "1972", "1974", "1976"],
+        correctAnswer: 1
+    },
+    {
+        id: 85,
+        question: "First martial law in Pakistan was imposed in:",
+        options: ["1956", "1958", "1965", "1969"],
+        correctAnswer: 1
+    },
+    {
+        id: 86,
+        question: "Which city is called “City of Lights” in Pakistan?",
+        options: ["Lahore", "Islamabad", "Karachi", "Quetta"],
+        correctAnswer: 2
+    },
+    {
+        id: 87,
+        question: "Who designed Pakistan’s national flag?",
+        options: ["Quaid-e-Azam", "Allama Iqbal", "Ameer-ud-Din Kidwai", "Choudhary Rehmat Ali"],
+        correctAnswer: 2
+    },
+    {
+        id: 88,
+        question: "What is the height of K2, the highest peak in Pakistan?",
+        options: ["8,848 m", "8,611 m", "8,526 m", "8,750 m"],
+        correctAnswer: 1
+    },
+    {
+        id: 89,
+        question: "Pakistan’s national anthem was composed by:",
+        options: ["Hafeez Jalandhri", "Allama Iqbal", "Ahmed Faraz", "Faiz Ahmed Faiz"],
+        correctAnswer: 0
+    },
+    {
+        id: 90,
+        question: "The famous Mohenjo-Daro is located in which province?",
+        options: ["Punjab", "Balochistan", "KPK", "Sindh"],
+        correctAnswer: 3
+    },
+    {
+        id: 91,
+        question: "How many Surahs are in the Holy Quran?",
+        options: ["113", "114", "112", "115"],
+        correctAnswer: 1
+    },
+    {
+        id: 92,
+        question: "Who was the first person to accept Islam?",
+        options: ["Hazrat Abu Bakr (RA)", "Hazrat Ali (RA)", "Hazrat Bilal (RA)", "Hazrat Umar (RA)"],
+        correctAnswer: 1
+    },
+    {
+        id: 93,
+        question: "In which cave was the Quran first revealed?",
+        options: ["Hira", "Thawr", "Safa", "Marwa"],
+        correctAnswer: 0
+    },
+    {
+        id: 94,
+        question: "How many times the name of Prophet Muhammad (PBUH) is mentioned in the Quran?",
+        options: ["4", "5", "6", "7"],
+        correctAnswer: 0
+    },
+    {
+        id: 95,
+        question: "Which prayer is offered before sunrise?",
+        options: ["Zuhr", "Fajr", "Maghrib", "Asr"],
+        correctAnswer: 1
+    },
+    {
+        id: 96,
+        question: "How many Makki Surahs are there?",
+        options: ["84", "30", "36", "90"],
+        correctAnswer: 0
+    },
+    {
+        id: 97,
+        question: "What is the meaning of ‘Zakat’?",
+        options: ["Prayer", "Fasting", "Purification", "Sacrifice"],
+        correctAnswer: 2
+    },
+    {
+        id: 98,
+        question: "Which battle was fought in the second Hijrah?",
+        options: ["Battle of Uhud", "Battle of Badr", "Battle of Khandaq", "Battle of Hunain"],
+        correctAnswer: 1
+    },
+    {
+        id: 99,
+        question: "What is the name of the angel who brings revelations?",
+        options: ["Israeel", "Jibrael", "Mikail", "Azrael"],
+        correctAnswer: 1
+    },
+    {
+        id: 100,
+        question: "What is the Quranic name of Surah Fatiha?",
+        options: ["Umm-ul-Kitab", "Al-Kausar", "Al-Baqarah", "An-Nas"],
+        correctAnswer: 0
+    }
+];
+
+        const totalMarks = 100;
+        const totalQuestions = quizQuestions.length;
+        const passingMarks = 50;
+        const totalTimeSeconds = 90 * 60;
+        const quizPassword = "uosbatch2k26";
+
+        // Application State
+        let appState = 'password';
+        let userName = '';
+        let userEmail = '';
+        let userIP = ''; // New variable to store user's IP
+        let userAnswers = {};
+        let flaggedQuestionsArray = [];
+        let quizScore = 0;
+        let quizTimeTaken = 0;
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let timeLeft = totalTimeSeconds;
+        let isDarkMode = false;
+
+        // DOM Elements
+        const sections = {
+            password: document.getElementById('passwordSection'),
+            userInfo: document.getElementById('userInfoSection'),
+            quiz: document.getElementById('quizSection'),
+            result: document.getElementById('resultSection'),
+            review: document.getElementById('reviewSection')
+        };
+        const passwordInput = document.getElementById('passwordInput');
+        const userNameInput = document.getElementById('userNameInput');
+        const userEmailInput = document.getElementById('userEmailInput');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const currentQuestionNumberSpan = document.getElementById('currentQuestionNumber');
+        const totalQuestionsCountSpan = document.getElementById('totalQuestionsCount');
+        const questionDisplayDiv = document.getElementById('questionDisplay');
+        const questionPaletteDiv = document.getElementById('questionPalette');
+        const finalScoreSpan = document.getElementById('finalScore');
+        const timeTakenDisplaySpan = document.getElementById('timeTakenDisplay');
+        const passFailStatusDiv = document.getElementById('passFailStatus');
+        const reviewQuestionsContainer = document.getElementById('reviewQuestionsContainer');
+        const darkModeToggleBtn = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const darkModeText = document.getElementById('darkModeText');
+        const prevQuestionBtn = document.getElementById('prevQuestionBtn');
+        const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+        const flagQuestionBtn = document.getElementById('flagQuestionBtn');
+
+        // New DOM Elements for scroll buttons
+        const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+        const scrollRightBtn = document.getElementById('scrollRightBtn');
+
+
+        // Render correct section based on app state
+        const renderSection = (state) => {
+            Object.values(sections).forEach(section => section.classList.add('hidden'));
+            if (sections[state]) {
+                sections[state].classList.remove('hidden');
+            }
+            appState = state;
+        };
+
+        // Dark Mode
+        const toggleDarkMode = () => {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark', isDarkMode);
+            document.body.classList.toggle('bg-gray-900', isDarkMode);
+            document.body.classList.toggle('text-gray-100', isDarkMode);
+            document.body.classList.toggle('bg-gray-100', !isDarkMode);
+            document.body.classList.toggle('text-gray-900', !isDarkMode);
+            darkModeIcon.classList.toggle('fa-moon', !isDarkMode);
+            darkModeIcon.classList.toggle('fa-sun', isDarkMode);
+            darkModeText.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+        };
+
+        // Timer
+        const startTimer = () => {
+            clearInterval(timerInterval);
+            timeLeft = totalTimeSeconds;
+            updateTimerDisplay(); // Initial display
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleSubmitTest();
+                    showMessage("Time's up! Your test has been submitted.", "info");
+                }
+            }, 1000);
+        };
+
+        const updateTimerDisplay = () => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        };
+
+        // Flagging
+        const updateFlagButtonText = () => {
+            const isFlagged = flaggedQuestionsArray.includes(currentQuestionIndex);
+            flagQuestionBtn.innerHTML = isFlagged ? '<i class="fas fa-flag-checkered mr-2"></i> Unflag' : '<i class="fas fa-flag mr-2"></i> Flag';
+            flagQuestionBtn.classList.toggle('btn-danger', !isFlagged);
+            flagQuestionBtn.classList.toggle('bg-yellow-500', isFlagged);
+            flagQuestionBtn.classList.toggle('hover:bg-yellow-600', isFlagged);
+        };
+
+        // Question Rendering
+        const renderQuestion = (index) => {
+            currentQuestionIndex = index;
+            const question = quizQuestions[index];
+            if (!question) return;
+
+            currentQuestionNumberSpan.textContent = index + 1;
+            questionDisplayDiv.innerHTML = `
+                <p class="text-xl font-semibold mb-4">${index + 1}. ${question.question}</p>
+                <div class="options-container">
+                    ${question.options.map((option, optIndex) => `
+                        <input type="radio" id="q${index}-opt${optIndex}" name="question${index}" value="${optIndex}" class="hidden"
+                            ${userAnswers[index] === optIndex ? 'checked' : ''}>
+                        <label for="q${index}-opt${optIndex}" class="option-label ${isDarkMode ? 'dark' : ''}">
+                            ${String.fromCharCode(65 + optIndex)}. ${option}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+
+            questionDisplayDiv.querySelectorAll(`input[name="question${index}"]`).forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    userAnswers[index] = parseInt(event.target.value);
+                    updateQuestionPalette();
+                });
+            });
+
+            if (currentQuestionIndex === totalQuestions - 1) {
+                nextQuestionBtn.innerHTML = 'Submit Test <i class="fas fa-check-circle ml-2"></i>';
+                nextQuestionBtn.classList.remove('btn-info');
+                nextQuestionBtn.classList.add('btn-success');
+                nextQuestionBtn.onclick = handleSubmitTest;
+            } else {
+                nextQuestionBtn.innerHTML = 'Next <i class="fas fa-arrow-right ml-2"></i>';
+                nextQuestionBtn.classList.remove('btn-success');
+                nextQuestionBtn.classList.add('btn-info');
+                nextQuestionBtn.onclick = () => navigateQuestion(1);
+            }
+
+            updateQuestionPalette();
+            updateFlagButtonText();
+            scrollToCurrentQuestionInPalette(); // Scroll to the current question in the palette
+        };
+
+        // Question Palette
+        const buildQuestionPalette = () => {
+            questionPaletteDiv.innerHTML = '';
+            for (let i = 0; i < totalQuestions; i++) {
+                const paletteItem = document.createElement('button');
+                paletteItem.className = `question-palette-item ${isDarkMode ? 'dark' : ''}`;
+                paletteItem.textContent = i + 1;
+                paletteItem.dataset.questionIndex = i;
+                paletteItem.addEventListener('click', () => renderQuestion(i));
+                questionPaletteDiv.appendChild(paletteItem);
+            }
+            updateQuestionPalette();
+        };
+
+        const updateQuestionPalette = () => {
+            questionPaletteDiv.querySelectorAll('.question-palette-item').forEach(item => {
+                const index = parseInt(item.dataset.questionIndex);
+                item.classList.remove('current', 'answered', 'flagged');
+                if (index === currentQuestionIndex) item.classList.add('current');
+                if (userAnswers[index] !== undefined) item.classList.add('answered');
+                if (flaggedQuestionsArray.includes(index)) item.classList.add('flagged');
+            });
+        };
+
+        // Scroll the question palette to the current question
+        const scrollToCurrentQuestionInPalette = () => {
+            const currentItem = questionPaletteDiv.querySelector('.question-palette-item.current');
+            if (currentItem) {
+                // Scroll the palette to make the current item visible
+                // 'center' aligns the item in the middle of the scroll area
+                currentItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        };
+
+        // Functions to scroll the question palette manually
+        const scrollPalette = (direction) => {
+            const scrollAmount = 200; // Adjust scroll amount as needed
+            questionPaletteDiv.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        };
+
+        // Navigation
+        const navigateQuestion = (direction) => {
+            let nextIndex = currentQuestionIndex + direction;
+            if (nextIndex >= 0 && nextIndex < totalQuestions) {
+                renderQuestion(nextIndex);
+            }
+        };
+
+        // Test Submission
+        const handleSubmitTest = async () => {
+            clearInterval(timerInterval);
+            quizTimeTaken = totalTimeSeconds - timeLeft;
+            quizScore = quizQuestions.reduce((score, q, index) => {
+                return userAnswers[index] === q.correctAnswer ? score + 1 : score;
+            }, 0);
+
+            try {
+                const resultData = {
+                    userName, userEmail, userIP, score: quizScore, totalQuestions, passingMarks, // Include userIP
+                    timeTakenSeconds: quizTimeTaken,
+                    answers: JSON.stringify(userAnswers),
+                    flaggedQuestions: JSON.stringify(flaggedQuestionsArray),
+                    timestamp: new Date().toISOString(),
+                };
+                await Backendless.Data.of("uos_mocktest1_result").save(resultData);
+                showMessage("Test results saved successfully!", "success");
+            } catch (error) {
+                console.error("Error saving test results:", error);
+                showMessage("Failed to save test results.", "error");
+            }
+
+            displayResults();
+            renderSection('result');
+        };
+
+        // Display Results
+        const displayResults = () => {
+            finalScoreSpan.textContent = quizScore;
+            const minutes = Math.floor(quizTimeTaken / 60);
+            const seconds = quizTimeTaken % 60;
+            timeTakenDisplaySpan.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const passed = quizScore >= passingMarks;
+            passFailStatusDiv.className = `p-4 rounded-lg text-2xl font-bold mb-8 ${passed ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'}`;
+            passFailStatusDiv.innerHTML = passed ? '<i class="fas fa-check-circle mr-2"></i> Congratulations! You Passed!' : '<i class="fas fa-times-circle mr-2"></i> Sorry, you did not pass.';
+        };
+
+        // Review Answers
+        const reviewAnswers = () => {
+            reviewQuestionsContainer.innerHTML = '';
+            quizQuestions.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === q.correctAnswer;
+                let statusMessage = '';
+                let optionsHtml = '';
+
+                if (userAnswer === undefined) {
+                    // Case: Not Attempted
+                    statusMessage = '<p class="mt-3 text-sm font-bold text-yellow-600 dark:text-yellow-400"><i class="fas fa-exclamation-circle mr-1"></i> Not Attempted</p>';
+                    optionsHtml = q.options.map((option, optIndex) => {
+                         let optionClass = 'option-label relative';
+                         if (optIndex === q.correctAnswer) {
+                            // Still highlight the correct answer
+                            optionClass += ' bg-green-100 dark:bg-green-900 border-green-500';
+                         }
+                         return `<div class="mb-2"><label class="${optionClass}">${String.fromCharCode(65 + optIndex)}. ${option}</label></div>`;
+                    }).join('');
+                } else {
+                    // Case: Attempted (Correct or Incorrect)
+                    optionsHtml = q.options.map((option, optIndex) => {
+                        let optionClass = 'option-label relative';
+                        let icon = '';
+                        if (optIndex === q.correctAnswer) {
+                            optionClass += ' bg-green-100 dark:bg-green-900 border-green-500';
+                            icon = '<i class="fas fa-check-circle text-green-600 dark:text-green-400 ml-2 absolute right-4 top-1/2 -translate-y-1/2"></i>';
+                        } else if (optIndex === userAnswer) {
+                            optionClass += ' bg-red-100 dark:bg-red-900 border-red-500';
+                            icon = '<i class="fas fa-times-circle text-red-600 dark:text-red-400 ml-2 absolute right-4 top-1/2 -translate-y-1/2"></i>';
+                        }
+                        return `<div class="mb-2"><label class="${optionClass}">${String.fromCharCode(65 + optIndex)}. ${option}${icon}</label></div>`;
+                    }).join('');
+                }
+
+                reviewQuestionsContainer.innerHTML += `
+                    <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm mb-6">
+                        <p class="text-lg font-semibold mb-3">${index + 1}. ${q.question}</p>
+                        <div class="options-container">${optionsHtml}</div>
+                        ${statusMessage}
+                    </div>
+                `;
+            });
+        };
+
+        // Removed PDF Generation Function: handleSavePdf
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            totalQuestionsCountSpan.textContent = totalQuestions;
+            renderSection('password');
+
+            document.getElementById('passwordSubmitBtn').addEventListener('click', () => {
+                if (passwordInput.value === quizPassword) {
+                    renderSection('userInfo');
+                } else {
+                    showMessage('Incorrect password.', 'error');
+                }
+                passwordInput.value = '';
+            });
+
+            document.getElementById('userInfoSubmitBtn').addEventListener('click', async () => {
+                const name = userNameInput.value.trim();
+                const email = userEmailInput.value.trim();
+                if (!name || !/^\S+@\S+\.\S+$/.test(email)) {
+                    showMessage("Valid Name and Email are required.", "error");
+                    return;
+                }
+                
+                // Get user's IP address
+                userIP = await getUserIP();
+                if (!userIP) {
+                    showMessage("Could not detect your IP address. Please check your internet connection and try again.", "error");
+                    return;
+                }
+
+                try {
+                    // Check for duplicate user based on email OR IP
+                    const queryBuilder = Backendless.DataQueryBuilder.create()
+                        .setWhereClause(`userEmail = '${email}' OR userIP = '${userIP}'`);
+                    const existing = await Backendless.Data.of("uos_mocktest1_result").find(queryBuilder);
+                    
+                    if (existing.length > 0) {
+                        showMessage("You have already attempted this test. You can only take it once.", "error");
+                        return;
+                    }
+                    
+                    userName = name;
+                    userEmail = email;
+                    flaggedQuestionsArray = [];
+                    renderSection('quiz');
+                    startTimer();
+                    buildQuestionPalette();
+                    renderQuestion(0);
+                } catch (error) {
+                    console.error("Error checking for duplicate user:", error);
+                    showMessage("Error checking user data. Please try again.", "error");
+                }
+            });
+
+            prevQuestionBtn.addEventListener('click', () => navigateQuestion(-1));
+
+            nextQuestionBtn.addEventListener('click', () => navigateQuestion(1)); // Ensure this is set for all questions except the last
+
+            flagQuestionBtn.addEventListener('click', () => {
+                const index = currentQuestionIndex;
+                const flagIndex = flaggedQuestionsArray.indexOf(index);
+                if (flagIndex > -1) {
+                    flaggedQuestionsArray.splice(flagIndex, 1);
+                    showMessage(`Question ${index + 1} unflagged.`, 'info');
+                } else {
+                    flaggedQuestionsArray.push(index);
+                    showMessage(`Question ${index + 1} flagged for review.`, 'info');
+                }
+                updateQuestionPalette();
+                updateFlagButtonText();
+            });
+
+            // New Event Listeners for scroll buttons
+            scrollLeftBtn.addEventListener('click', () => scrollPalette(-1));
+            scrollRightBtn.addEventListener('click', () => scrollPalette(1));
+
+
+            document.getElementById('reviewAnswersBtn').addEventListener('click', () => {
+                reviewAnswers();
+                renderSection('review');
+            });
+            
+            // Removed PDF save button event listener
+            // document.getElementById('savePdfBtn').addEventListener('click', handleSavePdf); // This line was commented out in previous version, now fully removed.
+
+            document.getElementById('backToResultBtn').addEventListener('click', () => renderSection('result'));
+            
+            darkModeToggleBtn.addEventListener('click', toggleDarkMode);
+        });
+    </script>
+</body>
+</html>
