@@ -7,13 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Card hover effect */
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+        /* Test button hover effect */
         .test-btn:hover {
             background-color: #1e40af;
         }
+        /* Password notice pulse animation */
         .password-notice {
             animation: pulse 2s infinite;
         }
@@ -22,6 +25,10 @@
             70% { box-shadow: 0 0 0 10px rgba(30, 64, 175, 0); }
             100% { box-shadow: 0 0 0 0 rgba(30, 64, 175, 0); }
         }
+        /* Adjust for sticker overflow - no longer needed if sticker is removed */
+        /* .card.relative {
+            overflow: hidden;
+        } */
     </style>
 </head>
 <body class="bg-gray-50">
@@ -68,9 +75,11 @@
         <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Available Mock Tests</h2>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Mock Test 1 - Enabled with "Recently Added" text -->
             <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
                 <div class="bg-blue-700 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 1</h3>
+                    <p class="text-sm italic text-center text-blue-200">Recently Added</p>
                 </div>
                 <div class="p-6">
                     <div class="flex justify-center mb-4">
@@ -97,8 +106,9 @@
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 2 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 2</h3>
                 </div>
                 <div class="p-6">
@@ -119,15 +129,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 3 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 3</h3>
                 </div>
                 <div class="p-6">
@@ -148,15 +159,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 4 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 4</h3>
                 </div>
                 <div class="p-6">
@@ -177,15 +189,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 5 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 5</h3>
                 </div>
                 <div class="p-6">
@@ -206,15 +219,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 6 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 6</h3>
                 </div>
                 <div class="p-6">
@@ -235,15 +249,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 7 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 7</h3>
                 </div>
                 <div class="p-6">
@@ -264,15 +279,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 8 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 8</h3>
                 </div>
                 <div class="p-6">
@@ -293,15 +309,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 9 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 9</h3>
                 </div>
                 <div class="p-6">
@@ -322,15 +339,16 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
 
-            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300">
-                <div class="bg-blue-700 text-white px-4 py-3">
+            <!-- Mock Test 10 - Disabled and grayed out -->
+            <div class="card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 transition duration-300 opacity-60 pointer-events-none">
+                <div class="bg-gray-500 text-white px-4 py-3">
                     <h3 class="text-xl font-semibold text-center">Mock Test 10</h3>
                 </div>
                 <div class="p-6">
@@ -351,16 +369,14 @@
                             <span>Detailed Results</span>
                         </li>
                     </ul>
-                    <a href="#" class="test-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition duration-300">
-                        <i class="fas fa-play mr-2"></i> Start Test
+                    <a href="#" class="test-btn block w-full bg-gray-400 text-white text-center py-2 px-4 rounded">
+                        Coming Soon
                     </a>
                     <p class="text-xs text-gray-500 mt-2 text-center">Password required</p>
                 </div>
             </div>
         </div>
     </section>
-
-   
 
     <footer class="bg-gray-800 text-white py-6">
         <div class="container mx-auto px-4 text-center">
@@ -378,7 +394,8 @@
                     // Prevent default only if the href is '#' (i.e., not a specific quiz link)
                     if (this.getAttribute('href') === '#') {
                         e.preventDefault();
-                        alert('Please contact Digital Sathi Network Admin on WhatsApp +92 333 3453958 to get the password for this test.');
+                        // Replaced alert with a custom message box for better UX
+                        showCustomAlert('Please contact Digital Sathi Network Admin on WhatsApp +92 333 3453958 to get the password for this test.');
                     }
                 });
             });
@@ -392,6 +409,69 @@
                     });
                 });
             });
+
+            // Custom Alert Box Function
+            function showCustomAlert(message) {
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.7);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                `;
+                overlay.id = 'custom-alert-overlay';
+
+                // Create alert box
+                const alertBox = document.createElement('div');
+                alertBox.style.cssText = `
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 0.75rem; /* rounded-lg */
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                    max-width: 90%;
+                    width: 400px;
+                    text-align: center;
+                    font-family: 'Inter', sans-serif;
+                    position: relative;
+                `;
+
+                // Add message
+                const messageParagraph = document.createElement('p');
+                messageParagraph.textContent = message;
+                messageParagraph.style.cssText = `
+                    font-size: 1.125rem; /* text-lg */
+                    color: #374151; /* gray-700 */
+                    margin-bottom: 1.5rem;
+                `;
+
+                // Add close button
+                const closeButton = document.createElement('button');
+                closeButton.textContent = 'OK';
+                closeButton.style.cssText = `
+                    background: #2563eb; /* blue-600 */
+                    color: white;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 0.5rem; /* rounded-md */
+                    font-weight: 600; /* font-semibold */
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                `;
+                closeButton.onmouseover = () => closeButton.style.backgroundColor = '#1e40af'; /* blue-700 */
+                closeButton.onmouseout = () => closeButton.style.backgroundColor = '#2563eb'; /* blue-600 */
+                closeButton.onclick = () => document.body.removeChild(overlay);
+
+                alertBox.appendChild(messageParagraph);
+                alertBox.appendChild(closeButton);
+                overlay.appendChild(alertBox);
+                document.body.appendChild(overlay);
+            }
         });
     </script>
 </body>
