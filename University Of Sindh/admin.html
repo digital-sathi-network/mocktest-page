@@ -1,908 +1,1019 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UoS Mock Test Admin Panel</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Backendless SDK CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/backendless@7.4.7/dist/backendless.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - UoS MockTest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase script. This must be loaded before any custom scripts that use it. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.53.0/dist/umd/supabase.min.js"></script>
 
-    <!-- jsPDF and html2canvas CDN for PDF generation -->
-    <!-- html2canvas is used to convert HTML content to a canvas (image) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- jsPDF is used to create and save PDF documents from images or text -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: {
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'pulse': 'pulse 2s infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+            pulse: {
+              '0%': { opacity: '1' },
+              '50%': { opacity: '0.5' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .loader { border-top-color: #3b82f6; }
+    .loader { animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .dark .glass-effect {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .container {
-            max-width: 1200px;
-        }
-        .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        .dark .card {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        .btn {
-            border-radius: 9999px; /* Full rounded */
-            padding: 12px 24px;
-            transition: background-color 0.3s ease;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        /* New secondary button style for Clear Filters */
-        .btn-secondary {
-            padding: 30px;
-            height: 48px;
-            border-radius: 10px;
-            width:150px;
-            font-size: 15px;
-            background-color: white;
-            color: #4a5568; /* gray-700 */
-            border: 1px solid #cbd5e0; /* gray-300 */
-        }
-        .btn-secondary:hover {
-             background-color: #2d3748;
-            border-color: #f0f4f8; /* gray-100 */
-            color: white;
-        }
-        .dark .btn-secondary {
-            background-color: #4a5568; /* gray-700 */
-            color: #faf9f9; /* Black as requested */
-            border-color: #6b7280; /* gray-600 */
-        }
-        .dark .btn-secondary:hover {
-            border-color: #2d3748; /* gray-800 */
-            background-color: white;
-            color: #2d3748;
-        }
+  <!-- Load jQuery first -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-        input[type="text"], input[type="email"], input[type="password"], .form-select {
-            border-radius: 8px;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            width: 100%;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
-        .dark input[type="text"], .dark input[type="email"], .dark input[type="password"], .dark .form-select {
-            background-color: #4a5568;
-            border-color: #6b7280;
-            color: #e2e8f0;
-        }
-        table {
-            width: 100%;
-            border-collapse: separate; /* Changed to separate for rounded corners on cells */
-            border-spacing: 0; /* Remove space between borders */
-            margin-top: 1rem;
-            border-radius: 8px; /* Apply rounded corners to the whole table */
-            overflow: hidden; /* Ensures content respects border-radius */
-        }
-        th, td {
-            padding: 1rem; /* Increased padding */
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0; /* Added right border for vertical lines */
-        }
-        .dark th, .dark td {
-            border-bottom: 1px solid #4a5568;
-            border-right: 1px solid #4a5568;
-        }
-        /* Remove right border from last column */
-        th:last-child, td:last-child {
-            border-right: none;
-        }
+  <!-- Then load DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
 
-        th {
-            background-color: #007bff; /* Blue background for headers */
-            font-weight: 600;
-            color: white; /* White text for headers */
-            position: sticky; /* Make headers sticky for scrolling tables */
-            top: 0;
-            z-index: 10; /* Ensure headers stay above content */
-        }
-        .dark th {
-            background-color: #1a202c; /* Darker blue for dark mode headers */
-            color: #e2e8f0;
-        }
-        /* Style for top-left and top-right header corners */
-        th:first-child {
-            border-top-left-radius: 8px;
-        }
-        th:last-child {
-            border-top-right-radius: 8px;
-        }
-
-        /* Alternating row colors */
-        tbody tr:nth-child(even) {
-            background-color: #f8f9fa; /* Light gray for even rows */
-        }
-        .dark tbody tr:nth-child(even) {
-            background-color: #2d3748; /* Darker gray for even rows in dark mode */
-        }
-        tbody tr:nth-child(odd) {
-            background-color: #ffffff; /* White for odd rows */
-        }
-        .dark tbody tr:nth-child(odd) {
-            background-color: #1a202c; /* Even darker gray for odd rows in dark mode */
-        }
-
-        tr:hover {
-            background-color: #e2e8f0; /* Lighter hover effect */
-        }
-        .dark tr:hover {
-            background-color: #4a5568; /* Darker hover effect in dark mode */
-        }
-        
-        /* Message Box Styling */
-        #messageBox {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            opacity: 0;
-            transform: translate(-50%, -20px);
-            min-width: 250px;
-            text-align: center;
-            pointer-events: none;
-        }
-        #messageBox.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-            pointer-events: auto;
-        }
-        .dark #messageBox {
-            background-color: #2d3748;
-            color: #e2e8f0;
-        }
-        #messageBox.error { border-left: 4px solid #dc3545; }
-        #messageBox.success { border-left: 4px solid #28a745; }
-        #messageBox.info { border-left: 4px solid #007bff; }
-
-        /* Hidden column for checkboxes */
-        .hidden-checkbox-column {
-            display: none;
-        }
-    </style>
+  <!-- Load other scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 transition-colors duration-300">
-    <!-- Message Box for user feedback -->
-    <div id="messageBox">
-        <p id="messageContent" class="font-semibold"></p>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+<!-- Header -->
+<header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 py-4 px-6 flex justify-between items-center sticky top-0 z-10">
+  <div class="flex items-center space-x-3">
+    <div class="bg-primary-600 w-10 h-10 rounded-lg flex items-center justify-center">
+      <i class="fas fa-graduation-cap text-white"></i>
     </div>
-
-    <header class="bg-blue-600 dark:bg-blue-800 text-white p-6 shadow-lg rounded-b-xl">
-        <div class="container mx-auto flex items-center justify-between">
-            <h1 class="text-2xl font-bold">UoS Mock Test Admin Panel</h1>
-            <div class="flex items-center space-x-4">
-                <button id="darkModeToggle" class="bg-blue-700 hover:bg-blue-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-full shadow-md transition-colors duration-300 flex items-center">
-                    <i class="fas fa-moon mr-2" id="darkModeIcon"></i>
-                    <span id="darkModeText">Dark Mode</span>
-                </button>
-            </div>
+    <h1 class="text-xl font-bold text-gray-900 dark:text-white">UoS MockTest Admin</h1>
+  </div>
+  <div class="flex items-center space-x-4">
+    <div class="relative">
+      <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+      <button class="relative p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+        <i class="fas fa-bell"></i>
+      </button>
+    </div>
+    <button onclick="toggleDark()" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+      <i class="fas fa-moon dark:hidden"></i>
+      <i class="fas fa-sun hidden dark:block"></i>
+    </button>
+  </div>
+</header>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 flex flex-col items-center">
+    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+    <p class="text-gray-700 dark:text-gray-300">Loading data...</p>
+  </div>
+</div>
+<!-- Login Page -->
+<div id="loginPage" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900">
+  <div class="w-full max-w-md animate-fade-in">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+      <div class="bg-primary-600 py-6 px-8">
+        <div class="flex items-center justify-center mb-4">
+          <div class="bg-white bg-opacity-20 w-16 h-16 rounded-full flex items-center justify-center">
+            <i class="fas fa-graduation-cap text-white text-2xl"></i>
+          </div>
         </div>
-    </header>
-
-    <main class="container mx-auto py-8 px-4">
-        <!-- Admin Login Section -->
-        <section id="adminLoginSection" class="flex justify-center items-center min-h-[calc(100vh-150px)]">
-            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md text-center">
-                <h2 class="text-2xl font-bold mb-6 text-blue-600 dark:text-blue-400">Admin Login</h2>
-                <div class="mb-4">
-                    <label for="adminUsername" class="block text-left text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Email:</label>
-                    <input type="email" id="adminUsername" class="form-input" placeholder="Enter admin email">
-                </div>
-                <div class="mb-6">
-                    <label for="adminPassword" class="block text-left text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Password:</label>
-                    <input type="password" id="adminPassword" class="form-input" placeholder="Enter password">
-                </div>
-                <button id="adminLoginBtn" class="btn btn-primary w-full">Login</button>
+        <h2 class="text-2xl font-bold text-white text-center">Admin Login</h2>
+        <p class="text-primary-200 text-center mt-1">Access your dashboard</p>
+      </div>
+      <div class="p-8">
+        <div class="space-y-5">
+          <div>
+            <label for="login" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-user text-gray-400"></i>
+              </div>
+              <input id="login" type="email" placeholder="Enter your email" class="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition" />
             </div>
-        </section>
-
-        <!-- Admin Dashboard Section -->
-        <section id="adminDashboardSection" class="hidden">
-            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Quiz Results Admin Panel</h2>
-                    <!-- Logout button -->
-                    <button id="logoutBtn" class="bg-blue-700 hover:bg-blue-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-full shadow-md transition-colors duration-300 flex items-center">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                    </button>
-                </div>
-                
-                <!-- Combined Action Buttons and Dropdown Layout -->
-                <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                    <!-- Dropdown for Mock Test Selection -->
-                    <div class="flex items-center space-x-2">
-                        <label for="mockTestSelector" class="text-gray-700 dark:text-gray-300 font-semibold">Results to Show:</label>
-                        <select id="mockTestSelector" class="form-select border rounded-md px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <!-- Options will be dynamically generated by JS -->
-                        </select>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div id="actionButtonsContainer" class="flex flex-wrap justify-center md:justify-end gap-4">
-                        <button id="refreshDataBtn" class="btn btn-primary px-4 py-2">
-                            <i class="fas fa-sync-alt mr-2"></i> Refresh Data
-                        </button>
-                        <button id="savePdfBtn" class="btn btn-primary px-4 py-2">
-                            <i class="fas fa-file-pdf mr-2"></i> Save PDF
-                        </button>
-                        <button id="deleteAllDataBtn" class="btn btn-danger px-4 py-2">
-                            <i class="fas fa-trash-alt mr-2"></i> Delete All Data
-                        </button>
-                        <button id="deleteMultipleUsersBtn" class="btn btn-primary px-4 py-2">
-                            <i class="fas fa-user-slash mr-2"></i> Delete Multiple Users
-                        </button>
-                        <!-- Cancel button will be added here dynamically -->
-                    </div>
-                </div>
-
-                <!-- Single Table for displaying results -->
-                <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-inner mt-6">
-                    <h3 id="currentMockTestTitle" class="text-xl font-semibold mb-4 text-blue-700 dark:text-blue-300">Mock Test Results</h3>
-                    <div class="mb-4 text-gray-700 dark:text-gray-300">
-                        Total Records: <span id="totalRecordsCount" class="font-bold">0</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table id="resultsTable" class="min-w-full">
-                            <thead>
-                                <tr>
-                                    <th id="checkboxHeader" class="hidden-checkbox-column">
-                                        <input type="checkbox" id="selectAllCheckboxes" class="form-checkbox h-4 w-4 text-blue-600 rounded">
-                                    </th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>IP Address</th>
-                                    <th>Score</th>
-                                    <th>Status</th>
-                                    <th>Time Taken</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="resultsTableBody">
-                                <!-- Results will be loaded here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="paginationControls" class="flex justify-center mt-6 space-x-4">
-                        <button id="prevPageBtn" class="btn btn-primary" disabled>Previous</button>
-                        <span id="pageInfo" class="text-gray-700 dark:text-gray-300 flex items-center">Page 1 of 1</span>
-                        <button id="nextPageBtn" class="btn btn-primary" disabled>Next</button>
-                    </div>
-                </div>
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-lock text-gray-400"></i>
+              </div>
+              <input id="password" type="password" placeholder="Enter your password" class="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition" />
             </div>
-        </section>
-    </main>
-
-    <footer class="bg-gray-800 dark:bg-gray-900 text-white p-6 mt-12 text-center rounded-t-xl shadow-inner">
-        <div class="container mx-auto">
-            <p>&copy; 2025 Digital Sathi Network. Admin Panel.</p>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input id="remember" type="checkbox" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded" />
+              <label for="remember" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Remember me</label>
+            </div>
+            <a href="#" onclick="showForgotPassword()" class="text-sm font-medium text-primary-600 hover:text-primary-500">Forgot password?</a>
+          </div>
+          <button onclick="handleLogin()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center">
+            <span id="loginBtnText">Sign In</span>
+            <i id="loginBtnLoader" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+          </button>
         </div>
-    </footer>
-
-    <script type="module">
-        // Backendless Initialization
-        const APP_ID = "66C73D7B-ACFE-470F-801D-3E67C7555D26";
-        const API_KEY = "5CC8E541-35C8-4EBC-A3D9-1AB07BC90906";
-        Backendless.initApp(APP_ID, API_KEY);
-
-        // --- Utility Functions ---
-        // Function to display a message box to the user
-        const showMessage = (message, type = 'info') => {
-            const messageBox = document.getElementById('messageBox');
-            const messageContent = document.getElementById('messageContent');
-            if (messageBox && messageContent) {
-                messageContent.textContent = message;
-                // Reset class list to ensure only relevant classes are applied
-                messageBox.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-700 dark:text-gray-200 p-4 rounded-lg shadow-lg z-50 transition-all duration-300';
-                messageBox.classList.add(type, 'show'); // Add type (error, success, info) and show class
-
-                // Hide message after 3 seconds
-                setTimeout(() => {
-                    messageBox.classList.remove('show');
-                }, 3000);
-            }
-        };
-
-        // --- Admin Panel State Variables ---
-        let isAdminLoggedIn = false;
-        let adminUsername = ''; // Stores the admin's email after login
-        let isMultiDeleteMode = false; // New: State to track multi-delete mode
-        
-        // Configuration for each mock test
-        const mockTestConfigs = [
-            { id: 'mocktest1', name: 'Mock Test 1', tableName: 'uos_mocktest1_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest2', name: 'Mock Test 2', tableName: 'uos_mocktest2_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest3', name: 'Mock Test 3', tableName: 'uos_mocktest3_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest4', name: 'Mock Test 4', tableName: 'uos_mocktest4_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest5', name: 'Mock Test 5', tableName: 'uos_mocktest5_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest6', name: 'Mock Test 6', tableName: 'uos_mocktest6_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest7', name: 'Mock Test 7', tableName: 'uos_mocktest7_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest8', name: 'Mock Test 8', tableName: 'uos_mocktest8_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest9', name: 'Mock Test 9', tableName: 'uos_mocktest9_result', currentPage: 1, filteredResults: [] },
-            { id: 'mocktest10', name: 'Mock Test 10', tableName: 'uos_mocktest10_result', currentPage: 1, filteredResults: [] }
-        ];
-
-        // Store fetched results, keyed by mock test ID. This will only store the data for the currently selected test.
-        let currentMockTestResults = []; 
-        let currentSelectedMockTestConfig = mockTestConfigs[0]; // Default to Mock Test 1
-
-        const resultsPerPage = 10; // Number of results to display per page
-        const passingMarks = 50; // Define passing marks for status calculation (e.g., 50 out of 100)
-        let isDarkMode = false; // State for dark mode
-
-        // --- DOM Elements ---
-        const adminLoginSection = document.getElementById('adminLoginSection');
-        const adminDashboardSection = document.getElementById('adminDashboardSection');
-        const adminUsernameInput = document.getElementById('adminUsername');
-        const adminPasswordInput = document.getElementById('adminPassword');
-        const adminLoginBtn = document.getElementById('adminLoginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const darkModeToggleBtn = document.getElementById('darkModeToggle');
-        const darkModeIcon = document.getElementById('darkModeIcon');
-        const darkModeText = document.getElementById('darkModeText');
-        
-        const mockTestSelector = document.getElementById('mockTestSelector'); // New: Dropdown selector
-        const currentMockTestTitle = document.getElementById('currentMockTestTitle'); // New: Title above the table
-        const totalRecordsCountSpan = document.getElementById('totalRecordsCount'); // New: Total Records Span
-
-        const resultsTableBody = document.getElementById('resultsTableBody');
-        const resultsTable = document.getElementById('resultsTable'); // Reference to the single table
-        const prevPageBtn = document.getElementById('prevPageBtn');
-        const nextPageBtn = document.getElementById('nextPageBtn');
-        const pageInfoSpan = document.getElementById('pageInfo');
-
-        const savePdfBtn = document.getElementById('savePdfBtn');
-        const refreshDataBtn = document.getElementById('refreshDataBtn');
-        const deleteAllDataBtn = document.getElementById('deleteAllDataBtn');
-        const deleteMultipleUsersBtn = document.getElementById('deleteMultipleUsersBtn');
-        const actionButtonsContainer = document.getElementById('actionButtonsContainer'); // Container for action buttons
-
-        // New DOM elements for multi-delete
-        const checkboxHeader = document.getElementById('checkboxHeader');
-        const selectAllCheckboxes = document.getElementById('selectAllCheckboxes');
-
-
-        // --- Dark Mode Toggle Functionality ---
-        const toggleDarkMode = () => {
-            isDarkMode = !isDarkMode;
-            document.body.classList.toggle('dark', isDarkMode);
-            document.body.classList.toggle('bg-gray-900', isDarkMode);
-            document.body.classList.toggle('text-gray-100', isDarkMode);
-            document.body.classList.toggle('bg-gray-100', !isDarkMode);
-            document.body.classList.toggle('text-gray-900', !isDarkMode);
-            darkModeIcon.classList.toggle('fa-moon', !isDarkMode); // Change icon to sun in dark mode
-            darkModeIcon.classList.toggle('fa-sun', isDarkMode); // Change icon to moon in light mode
-            darkModeText.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode'; // Change text
-        };
-
-        // --- Admin Authentication Functions ---
-        const checkAdminSession = async () => {
-            try {
-                const currentUser = await Backendless.UserService.getCurrentUser();
-                if (currentUser && currentUser.userStatus === 'ENABLED') {
-                    isAdminLoggedIn = true;
-                    adminUsername = currentUser.email;
-                    showDashboard();
-                } else {
-                    showLogin();
-                }
-            } catch (error) {
-                console.log("No active admin session:", error.message);
-                showLogin();
-            }
-        };
-
-        const handleAdminLogin = async () => {
-            const email = adminUsernameInput.value.trim();
-            const password = adminPasswordInput.value.trim();
-
-            if (!email || !password) {
-                showMessage('Please enter both email and password.', 'error');
-                return;
-            }
-
-            try {
-                const user = await Backendless.UserService.login(email, password, true);
-                isAdminLoggedIn = true;
-                adminUsername = user.email;
-                showMessage(`Welcome!`, 'success');
-                showDashboard();
-            } catch (error) {
-                console.error('Login error:', error);
-                showMessage(`Login failed: ${error.message}`, 'error');
-            }
-        };
-
-        const handleAdminLogout = async () => {
-            try {
-                await Backendless.UserService.logout();
-                isAdminLoggedIn = false;
-                adminUsername = '';
-                showMessage('Logged out successfully.', 'info');
-                showLogin();
-            } catch (error) {
-                console.error('Logout error:', error);
-                showMessage('An error occurred during logout. Please try again.', 'error');
-            }
-        };
-
-        // --- Section Display Logic ---
-        const showLogin = () => {
-            adminLoginSection.classList.remove('hidden');
-            adminDashboardSection.classList.add('hidden');
-            adminUsernameInput.value = '';
-            adminPasswordInput.value = '';
-        };
-
-        const showDashboard = async () => {
-            adminLoginSection.classList.add('hidden');
-            adminDashboardSection.classList.remove('hidden');
-            populateMockTestSelector(); // Populate dropdown on dashboard load
-            // Automatically load the first mock test's data
-            await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id);
-        };
-
-        // --- Mock Test Selector Functions ---
-        const populateMockTestSelector = () => {
-            mockTestSelector.innerHTML = ''; // Clear existing options
-            mockTestConfigs.forEach(config => {
-                const option = document.createElement('option');
-                option.value = config.id;
-                option.textContent = config.name;
-                mockTestSelector.appendChild(option);
-            });
-            // Set the default selected option
-            mockTestSelector.value = currentSelectedMockTestConfig.id;
-        };
-
-        const updateGlobalButtonLabels = () => {
-            savePdfBtn.textContent = `Save ${currentSelectedMockTestConfig.name} PDF`;
-            deleteAllDataBtn.textContent = `Delete All ${currentSelectedMockTestConfig.name} Data`;
-            // Only update deleteMultipleUsersBtn if not in multi-delete mode
-            if (!isMultiDeleteMode) {
-                deleteMultipleUsersBtn.textContent = `Delete Multiple ${currentSelectedMockTestConfig.name} Users`;
-            }
-        };
-
-        // --- Quiz Results Management Functions ---
-        // Fetches and renders results for a specific mock test
-        const fetchAndRenderMockTestResults = async (mockTestId) => {
-            const config = mockTestConfigs.find(c => c.id === mockTestId);
-            if (!config) {
-                showMessage(`Mock Test configuration for ${mockTestId} not found.`, 'error');
-                return;
-            }
-            currentSelectedMockTestConfig = config; // Update the current selected config
-            currentMockTestTitle.textContent = `${config.name} Results`; // Update table title
-            updateGlobalButtonLabels(); // Update button labels
-
-            showMessage(`Fetching results for ${config.name}...`, 'info');
-            try {
-                const queryBuilder = Backendless.DataQueryBuilder.create()
-                    .setSortBy(["timestamp DESC"]);
-                
-                const results = await Backendless.Data.of(config.tableName).find(queryBuilder);
-                currentMockTestResults = results; // Store results for the currently selected test
-                config.filteredResults = results; // Update filtered results for the current config
-                config.currentPage = 1; // Reset to first page for the new selection
-                renderResultsTable(); // Render the table with the new data
-                showMessage(`Results for ${config.name} loaded.`, 'success');
-            } catch (error) {
-                console.error(`Error fetching quiz results for ${config.name}:`, error);
-                showMessage(`Failed to load quiz results for ${config.name}.`, 'error');
-                currentMockTestResults = []; // Clear results on error
-                config.filteredResults = [];
-                renderResultsTable(); // Render empty table
-            }
-        };
-
-        // Renders the quiz results table based on the currently selected mock test's data
-        const renderResultsTable = () => {
-            resultsTableBody.innerHTML = ''; // Clear existing table rows
-
-            const totalRecords = currentSelectedMockTestConfig.filteredResults.length;
-            totalRecordsCountSpan.textContent = totalRecords; // Update total records count
-
-            const totalPages = Math.ceil(totalRecords / resultsPerPage);
-            const startIndex = (currentSelectedMockTestConfig.currentPage - 1) * resultsPerPage;
-            const endIndex = startIndex + resultsPerPage;
-            const paginatedResults = currentSelectedMockTestConfig.filteredResults.slice(startIndex, endIndex);
-
-            // Toggle visibility of checkbox header
-            if (checkboxHeader) {
-                checkboxHeader.classList.toggle('hidden-checkbox-column', !isMultiDeleteMode);
-            }
-            if (selectAllCheckboxes) {
-                selectAllCheckboxes.checked = false; // Uncheck select all when re-rendering
-            }
-
-
-            if (paginatedResults.length === 0) {
-                // Colspan is 7 if checkbox column is hidden, 8 if visible
-                const colspan = isMultiDeleteMode ? 8 : 7; 
-                resultsTableBody.innerHTML = `<tr><td colspan="${colspan}" class="text-center py-4 text-gray-500 dark:text-gray-400">No results found for ${currentSelectedMockTestConfig.name}.</td></tr>`;
-            } else {
-                paginatedResults.forEach(result => {
-                    const passed = result.score >= passingMarks;
-                    const statusClass = passed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
-                    const statusText = passed ? 'PASS' : 'FAIL';
-
-                    const row = resultsTableBody.insertRow();
-                    row.innerHTML = `
-                        <td class="multi-delete-checkbox-cell ${isMultiDeleteMode ? '' : 'hidden-checkbox-column'}">
-                            <input type="checkbox" class="row-checkbox h-4 w-4 text-blue-600 rounded" data-object-id="${result.objectId}">
-                        </td>
-                        <td>${result.userName || 'N/A'}</td>
-                        <td>${result.userEmail || 'N/A'}</td>
-                        <td>${result.userIP || 'N/A'}</td>
-                        <td>${result.score || 0} / ${result.totalQuestions || 100}</td>
-                        <td class="font-bold ${statusClass}">${statusText}</td>
-                        <td>${formatTime(result.timeTakenSeconds || 0)}</td>
-                        <td>${new Date(result.timestamp).toLocaleString() || 'N/A'}</td>
-                    `;
-                });
-            }
-
-            updatePaginationControls(totalPages); // Update pagination button states and info
-        };
-
-        // Formats time from seconds into MM:SS format
-        const formatTime = (seconds) => {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-        };
-
-        // Updates the pagination controls (page info, button disabled states)
-        const updatePaginationControls = (totalPages) => {
-            pageInfoSpan.textContent = `Page ${currentSelectedMockTestConfig.currentPage} of ${totalPages || 1}`;
-            prevPageBtn.disabled = currentSelectedMockTestConfig.currentPage === 1;
-            nextPageBtn.disabled = currentSelectedMockTestConfig.currentPage === totalPages || totalPages === 0;
-        };
-
-        // --- Multi-Delete Mode Functions ---
-        const toggleMultiDeleteMode = (enable) => {
-            isMultiDeleteMode = enable;
-
-            // Toggle visibility of checkbox column
-            if (checkboxHeader) {
-                checkboxHeader.classList.toggle('hidden-checkbox-column', !isMultiDeleteMode);
-            }
-            document.querySelectorAll('.multi-delete-checkbox-cell').forEach(cell => {
-                cell.classList.toggle('hidden-checkbox-column', !isMultiDeleteMode);
-            });
-
-            // Update Delete Multiple Users button text and create/remove Cancel button
-            if (isMultiDeleteMode) {
-                deleteMultipleUsersBtn.textContent = 'Confirm Deletion';
-                deleteMultipleUsersBtn.classList.remove('btn-primary');
-                deleteMultipleUsersBtn.classList.add('btn-danger');
-
-                const cancelButton = document.createElement('button');
-                cancelButton.id = 'cancelMultiDeleteBtn';
-                cancelButton.className = 'btn btn-secondary px-4 py-2';
-                cancelButton.innerHTML = '<i class="fas fa-times mr-2"></i> Cancel';
-                actionButtonsContainer.appendChild(cancelButton);
-
-                cancelButton.addEventListener('click', () => {
-                    toggleMultiDeleteMode(false); // Exit multi-delete mode
-                    renderResultsTable(); // Re-render to hide checkboxes
-                });
-
-                // Disable other buttons in multi-delete mode
-                refreshDataBtn.disabled = true;
-                savePdfBtn.disabled = true;
-                deleteAllDataBtn.disabled = true;
-                mockTestSelector.disabled = true;
-
-                // Add event listener for select all checkbox
-                if (selectAllCheckboxes) {
-                    selectAllCheckboxes.addEventListener('change', handleSelectAllCheckboxes);
-                }
-
-            } else {
-                deleteMultipleUsersBtn.textContent = `Delete Multiple ${currentSelectedMockTestConfig.name} Users`;
-                deleteMultipleUsersBtn.classList.remove('btn-danger');
-                deleteMultipleUsersBtn.classList.add('btn-primary');
-
-                const cancelButton = document.getElementById('cancelMultiDeleteBtn');
-                if (cancelButton) {
-                    cancelButton.remove();
-                }
-
-                // Re-enable other buttons
-                refreshDataBtn.disabled = false;
-                savePdfBtn.disabled = false;
-                deleteAllDataBtn.disabled = false;
-                mockTestSelector.disabled = false;
-
-                // Remove event listener for select all checkbox
-                if (selectAllCheckboxes) {
-                    selectAllCheckboxes.removeEventListener('change', handleSelectAllCheckboxes);
-                    selectAllCheckboxes.checked = false; // Ensure it's unchecked
-                }
-            }
-        };
-
-        const handleSelectAllCheckboxes = (event) => {
-            const isChecked = event.target.checked;
-            document.querySelectorAll('.row-checkbox').forEach(checkbox => {
-                checkbox.checked = isChecked;
-            });
-        };
-
-        // --- Global Button Functionality ---
-
-        const handleRefreshData = async () => {
-            showMessage(`Refreshing data for ${currentSelectedMockTestConfig.name}...`, 'info');
-            await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id);
-            showMessage(`Data for ${currentSelectedMockTestConfig.name} refreshed!`, 'success');
-        };
-
-        const handleDeleteAllData = async () => {
-            if (confirm(`Are you absolutely sure you want to delete ALL quiz results for ${currentSelectedMockTestConfig.name}? This action cannot be undone!`)) {
-                showMessage(`Deleting all data for ${currentSelectedMockTestConfig.name}...`, 'info');
-                try {
-                    const queryBuilder = Backendless.DataQueryBuilder.create().setProperties(["objectId"]);
-                    const allRecords = await Backendless.Data.of(currentSelectedMockTestConfig.tableName).find(queryBuilder);
-
-                    if (allRecords.length === 0) {
-                        showMessage(`No data to delete for ${currentSelectedMockTestConfig.name}.`, 'info');
-                        return;
-                    }
-
-                    const batchSize = 50;
-                    for (let i = 0; i < allRecords.length; i += batchSize) {
-                        const batch = allRecords.slice(i, i + batchSize);
-                        const objectIdsToDelete = batch.map(record => record.objectId);
-                        await Backendless.Data.of(currentSelectedMockTestConfig.tableName).remove(objectIdsToDelete);
-                    }
-                    
-                    showMessage(`All quiz results for ${currentSelectedMockTestConfig.name} deleted successfully!`, 'success');
-                    await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id); // Re-fetch and re-render
-                } catch (error) {
-                    console.error(`Error deleting all data for ${currentSelectedMockTestConfig.name}:`, error);
-                    showMessage(`Failed to delete all data for ${currentSelectedMockTestConfig.name}: ${error.message}`, 'error');
-                }
-            } else {
-                showMessage('Deletion cancelled.', 'info');
-            }
-        };
-
-        const handleDeleteMultipleUsers = async () => {
-            if (isMultiDeleteMode) {
-                // Confirm deletion
-                const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
-                const objectIdsToDelete = Array.from(selectedCheckboxes).map(cb => cb.dataset.objectId);
-
-                if (objectIdsToDelete.length === 0) {
-                    showMessage('No users selected for deletion.', 'info');
-                    return;
-                }
-
-                if (!confirm(`Are you sure you want to delete ${objectIdsToDelete.length} selected user(s) from ${currentSelectedMockTestConfig.name}?`)) {
-                    showMessage('Deletion cancelled.', 'info');
-                    return;
-                }
-
-                showMessage(`Deleting ${objectIdsToDelete.length} selected user(s) from ${currentSelectedMockTestConfig.name}...`, 'info');
-                try {
-                    // Backendless remove method can take an array of objectIds for bulk removal
-                    await Backendless.Data.of(currentSelectedMockTestConfig.tableName).remove(objectIdsToDelete);
-                    showMessage(`Successfully deleted ${objectIdsToDelete.length} selected user(s) from ${currentSelectedMockTestConfig.name}!`, 'success');
-                } catch (error) {
-                    console.error(`Error deleting selected users from ${currentSelectedMockTestConfig.name}:`, error);
-                    showMessage(`Failed to delete selected users from ${currentSelectedMockTestConfig.name}: ${error.message}`, 'error');
-                } finally {
-                    toggleMultiDeleteMode(false); // Exit multi-delete mode
-                    await fetchAndRenderMockTestResults(currentSelectedMockTestConfig.id); // Re-fetch and re-render
-                }
-
-            } else {
-                // Enter multi-delete mode
-                toggleMultiDeleteMode(true);
-                renderResultsTable(); // Re-render to show checkboxes
-            }
-        };
-
-        // --- PDF Generation Function ---
-        const generatePdf = async () => {
-            const { jsPDF } = window.jspdf;
-            
-            // Target the single results table
-            const inputTable = document.getElementById('resultsTable'); 
-
-            // Create a temporary container for the table to ensure it's rendered completely for PDF
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.left = '-9999px'; // Move off-screen
-            document.body.appendChild(tempDiv);
-
-            // Create a clone of the table structure
-            const clonedTable = inputTable.cloneNode(true);
-            clonedTable.id = 'tempPdfTable'; // Assign a temporary ID
-            
-            // Remove the checkbox column header from the cloned table for PDF export
-            const clonedTableHeaderRow = clonedTable.querySelector('thead tr');
-            if (clonedTableHeaderRow && clonedTableHeaderRow.children[0] && clonedTableHeaderRow.children[0].id === 'checkboxHeader') {
-                clonedTableHeaderRow.removeChild(clonedTableHeaderRow.children[0]);
-            }
-
-            // Clear existing tbody content from the clone
-            const clonedTableBody = clonedTable.querySelector('tbody');
-            clonedTableBody.innerHTML = '';
-
-            // Get the cloned table header (thead) and apply styling
-            const clonedTableHeader = clonedTable.querySelector('thead');
-            if (clonedTableHeader) {
-                const headerCells = Array.from(clonedTableHeader.querySelectorAll('th'));
-                
-                headerCells.forEach(th => {
-                    th.style.backgroundColor = '#007bff'; // Blue background
-                    th.style.color = 'white'; // White text
-                    th.style.padding = '0.75rem'; // Maintain padding
-                    th.style.textAlign = 'left'; // Maintain text alignment
-                    th.style.borderBottom = '1px solid #e2e8f0'; // Maintain border
-                });
-            }
-            
-            // Populate the cloned table's tbody with *all* results for the currently selected mock test
-            const resultsToExport = currentSelectedMockTestConfig.filteredResults; 
-            if (resultsToExport && resultsToExport.length === 0) {
-                clonedTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">No results to export for ${currentSelectedMockTestConfig.name}.</td></tr>`; 
-            } else {
-                resultsToExport.forEach(result => {
-                    const passed = result.score >= passingMarks;
-                    const statusText = passed ? 'PASS' : 'FAIL';
-
-                    const row = clonedTableBody.insertRow();
-                    row.innerHTML = `
-                        <td>${result.userName || 'N/A'}</td>
-                        <td>${result.userEmail || 'N/A'}</td>
-                        <td>${result.userIP || 'N/A'}</td>
-                        <td>${result.score || 0} / ${result.totalQuestions || 100}</td>
-                        <td>${statusText}</td>
-                        <td>${formatTime(result.timeTakenSeconds || 0)}</td>
-                        <td>${new Date(result.timestamp).toLocaleString() || 'N/A'}</td>
-                    `;
-                });
-            }
-
-            // Remove checkbox cells from cloned table rows for PDF export
-            Array.from(clonedTable.querySelectorAll('.multi-delete-checkbox-cell')).forEach(cell => {
-                cell.remove();
-            });
-
-
-            tempDiv.appendChild(clonedTable); // Add the cloned table to the temporary div
-
-            try {
-                showMessage(`Generating PDF for ${currentSelectedMockTestConfig.name}...`, 'info');
-                const canvas = await html2canvas(clonedTable, { scale: 2 });
-                const imgData = canvas.toDataURL('image/png');
-
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgWidth = 210; // A4 width in mm
-                const pageHeight = 297; // A4 height in mm
-                
-                // Add custom heading to the PDF
-                const marginX = 10;
-                let currentY = 10;
-
-                pdf.setFontSize(14);
-                pdf.text("University of Sindh Pre-Entry Test Mock Test For Batch 2k26", pdf.internal.pageSize.getWidth() / 2, currentY, { align: 'center' });
-                currentY += 7; // Line spacing
-
-                pdf.setFontSize(10);
-                pdf.text("Powered by Digital Sathi Network", pdf.internal.pageSize.getWidth() / 2, currentY, { align: 'center' });
-                currentY += 10; // Line spacing
-
-                pdf.setFontSize(12);
-                pdf.text(`${currentSelectedMockTestConfig.name} Results`, pdf.internal.pageSize.getWidth() / 2, currentY, { align: 'center' });
-                currentY += 10; // Line spacing before table
-
-                // Calculate image height while maintaining aspect ratio
-                const imgHeight = canvas.height * imgWidth / canvas.width;
-                let heightLeft = imgHeight;
-                let position = currentY; // Start position after heading
-
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= (pageHeight - currentY); // Adjust heightLeft for first page content
-
-                while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-                pdf.save(`${currentSelectedMockTestConfig.id}_results.pdf`);
-                showMessage(`PDF for ${currentSelectedMockTestConfig.name} generated successfully!`, 'success');
-            } catch (error) {
-                console.error('Error generating PDF:', error);
-                showMessage('Failed to generate PDF. Please try again.', 'error');
-            } finally {
-                document.body.removeChild(tempDiv); // Clean up the temporary div
-            }
-        };
-
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAdminSession(); // Check admin session on page load
-
-            // Login/Logout event listeners
-            adminLoginBtn.addEventListener('click', handleAdminLogin);
-            logoutBtn.addEventListener('click', handleAdminLogout);
-            
-            // Dark mode toggle event listener
-            darkModeToggleBtn.addEventListener('click', toggleDarkMode);
-
-            // Mock Test Selector event listener
-            mockTestSelector.addEventListener('change', (event) => {
-                const selectedMockTestId = event.target.value;
-                fetchAndRenderMockTestResults(selectedMockTestId);
-            });
-
-            // Global action button event listeners
-            savePdfBtn.addEventListener('click', generatePdf);
-            refreshDataBtn.addEventListener('click', handleRefreshData);
-            deleteAllDataBtn.addEventListener('click', handleDeleteAllData);
-            deleteMultipleUsersBtn.addEventListener('click', handleDeleteMultipleUsers);
-
-            // Select All Checkbox listener
-            if (selectAllCheckboxes) {
-                selectAllCheckboxes.addEventListener('change', handleSelectAllCheckboxes);
-            }
-
-            // Pagination event listeners for the single table
-            prevPageBtn.addEventListener('click', () => {
-                if (currentSelectedMockTestConfig.currentPage > 1) {
-                    currentSelectedMockTestConfig.currentPage--;
-                    renderResultsTable();
-                }
-            });
-            nextPageBtn.addEventListener('click', () => {
-                const totalPages = Math.ceil(currentSelectedMockTestConfig.filteredResults.length / resultsPerPage);
-                if (currentSelectedMockTestConfig.currentPage < totalPages) {
-                    currentSelectedMockTestConfig.currentPage++;
-                    renderResultsTable();
-                }
-            });
-        });
-    </script>
+        <div id="loginMsg" class="mt-4 text-center text-sm"></div>
+      </div>
+    </div>
+    <p class="text-center text-gray-600 dark:text-gray-400 text-sm mt-6">
+      © 2025 University of Sindh. All rights reserved.
+    </p>
+  </div>
+</div>
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full animate-slide-up">
+    <div class="p-6">
+      <div class="flex items-center justify-center w-12 h-12 mx-auto bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
+        <i class="fas fa-key text-blue-600 dark:text-blue-400 text-xl"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center mb-2">Forgot Password</h3>
+      <p class="text-gray-600 dark:text-gray-400 text-center mb-6">Enter your email to reset your password</p>
+      <div class="space-y-4">
+        <div>
+          <input id="resetEmail" type="email" placeholder="Enter your email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+        </div>
+        <div class="flex justify-center space-x-3">
+          <button onclick="hideForgotPassword()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition duration-300">
+            Cancel
+          </button>
+          <button onclick="handleResetPassword()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition duration-300">
+            Reset Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Dashboard -->
+<div id="dashboardPage" class="hidden min-h-screen">
+  <!-- Main Content -->
+  <main class="flex-1 p-4 md:p-6">
+    <div class="max-w-7xl mx-auto space-y-6 animate-fade-in">
+      <!-- Page Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Test Results Dashboard</h1>
+          <p class="text-gray-600 dark:text-gray-400 mt-1">Monitor and manage mock test results</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span id="lastUpdated" class="text-sm text-gray-500 dark:text-gray-400">Last updated: Never</span>
+          <button onclick="fetchResults()" class="p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <i class="fas fa-sync-alt text-gray-600 dark:text-gray-400"></i>
+          </button>
+        </div>
+      </div>
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center">
+            <div class="p-3 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
+              <i class="fas fa-file-alt text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Tests</p>
+              <p id="totalTests" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center">
+            <div class="p-3 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+              <i class="fas fa-user-check text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Passed</p>
+              <p id="passedTests" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center">
+            <div class="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+              <i class="fas fa-user-times text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Failed</p>
+              <p id="failedTests" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center">
+            <div class="p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+              <i class="fas fa-percentage text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Avg. Score</p>
+              <p id="avgScore" class="text-2xl font-bold text-gray-900 dark:text-white">0%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Filters & Controls -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-200 dark:border-gray-700">
+        <div class="flex flex-col md:flex-row gap-4 md:items-end">
+          <div class="flex-1">
+            <label for="testSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Test</label>
+            <div class="relative">
+              <select id="testSelect" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white appearance-none">
+                <option value="uos_mocktest1_result">Mock Test 1</option>
+                <option value="uos_mocktest2_result">Mock Test 2</option>
+                <option value="uos_mocktest3_result">Mock Test 3</option>
+                <option value="uos_mocktest4_result">Mock Test 4</option>
+                <option value="uos_mocktest5_result">Mock Test 5</option>
+                <option value="uos_mocktest6_result">Mock Test 6</option>
+                <option value="uos_mocktest7_result">Mock Test 7</option>
+                <option value="uos_mocktest8_result">Mock Test 8</option>
+                <option value="uos_mocktest9_result">Mock Test 9</option>
+                <option value="uos_mocktest10_result">Mock Test 10</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                <i class="fas fa-chevron-down"></i>
+              </div>
+            </div>
+          </div>
+          <div class="w-full md:w-48">
+            <label for="scoreFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Min Score</label>
+            <div class="relative">
+              <input id="scoreFilter" type="number" placeholder="0" min="0" max="100" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <span class="text-gray-500 dark:text-gray-400">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="applyFilter()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition duration-300 flex items-center">
+              <i class="fas fa-filter mr-2"></i> Filter
+            </button>
+            <button onclick="exportExcel()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-300 flex items-center">
+              <i class="fas fa-file-excel mr-2"></i> Excel
+            </button>
+            <button onclick="exportPDF()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-300 flex items-center">
+              <i class="fas fa-file-pdf mr-2"></i> PDF
+            </button>
+            <button onclick="logout()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition duration-300 flex items-center">
+              <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- No Data Message -->
+      <div id="noDataMessage" class="hidden bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-yellow-700 dark:text-yellow-300">
+              <span id="noDataText">No data available for this test.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Results Table -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white">Test Results</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table id="resultTable" class="w-full text-sm">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Passing</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Questions</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">IP</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="resultBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+              <!-- Table rows will be inserted here -->
+            </tbody>
+          </table>
+          <div id="emptyState" class="hidden p-12 text-center">
+            <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">No results found</h3>
+            <p class="text-gray-500 dark:text-gray-400">Try adjusting your filters to see more results.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full animate-slide-up">
+    <div class="p-6">
+      <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
+        <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400 text-xl"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center mb-2">Delete Record?</h3>
+      <p class="text-gray-600 dark:text-gray-400 text-center mb-6">This will permanently remove the entry. This action cannot be undone.</p>
+      <div class="flex justify-center space-x-3">
+        <button onclick="hideModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition duration-300">
+          Cancel
+        </button>
+        <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-300">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-4 right-4 hidden z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-center space-x-3 min-w-[300px] animate-slide-up">
+    <div id="toastIcon"></div>
+    <div>
+      <p id="toastMessage" class="text-gray-800 dark:text-gray-200 font-medium"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Initialize Supabase
+const supabaseUrl = 'https://ibdnjnvoleufjovucicb.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImliZG5qbnZvbGV1ZmpvdnVjaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxMTM3MzEsImV4cCI6MjA2OTY4OTczMX0.CZsTvvkzwhvj-pQcMF3IDUceL2w2ljHgyirQK9jeP00';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+let currentTable = 'uos_mocktest1_result';
+let deleteId = null;
+let dataTable = null;
+let retryCount = 0;
+const MAX_RETRIES = 3;
+let isFetching = false;
+let currentUser = null;
+
+// Available tests (only Mock Test 1 has data)
+const availableTests = ['uos_mocktest1_result'];
+
+// Theme toggle
+function toggleDark() {
+  const html = document.documentElement;
+  html.classList.toggle('dark');
+  html.classList.toggle('light');
+  localStorage.setItem('theme', html.className);
+}
+
+// Show toast notification
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  const toastIcon = document.getElementById('toastIcon');
+
+  toastMessage.textContent = message;
+
+  // Set icon based on type
+  if (type === 'success') {
+    toastIcon.innerHTML = '<div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center"><i class="fas fa-check text-green-600 dark:text-green-400"></i></div>';
+  } else if (type === 'error') {
+    toastIcon.innerHTML = '<div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center"><i class="fas fa-times text-red-600 dark:text-red-400"></i></div>';
+  } else if (type === 'info') {
+    toastIcon.innerHTML = '<div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"><i class="fas fa-info text-blue-600 dark:text-blue-400"></i></div>';
+  } else if (type === 'warning') {
+    toastIcon.innerHTML = '<div class="w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center"><i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400"></i></div>';
+  }
+
+  toast.classList.remove('hidden');
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    toast.classList.add('hidden');
+  }, 3000);
+}
+
+// Show/hide loading overlay
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+// Show forgot password modal
+function showForgotPassword() {
+  document.getElementById('forgotPasswordModal').classList.remove('hidden');
+  document.getElementById('forgotPasswordModal').classList.add('flex');
+}
+
+// Hide forgot password modal
+function hideForgotPassword() {
+  document.getElementById('forgotPasswordModal').classList.add('hidden');
+  document.getElementById('forgotPasswordModal').classList.remove('flex');
+}
+
+// Handle forgot password
+async function handleResetPassword() {
+  const email = document.getElementById('resetEmail').value.trim();
+
+  if (!email) {
+    showToast('Please enter your email address', 'error');
+    return;
+  }
+
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    showToast('Please enter a valid email address', 'error');
+    return;
+  }
+
+  showLoading();
+
+  try {
+    // Check if user exists in the database
+    const { data: users, error } = await supabaseClient
+      .from('users')
+      .select('email')
+      .eq('email', email);
+
+    if (error) {
+      if (error.code === 'PGRST116' || error.message.includes('not found')) {
+        showToast('The required \'users\' table does not exist. Please set it up in Supabase.', 'error');
+        // No need to throw, just handle the error and return
+        return;
+      }
+      throw error;
+    }
+
+    if (!users || users.length === 0) {
+      showToast('No account found with this email address', 'error');
+      return;
+    }
+
+    // In a real application, you would send a password reset email here
+    // For demo purposes, we'll just show a success message
+    showToast('Password reset link has been sent to your email', 'success');
+    hideForgotPassword();
+  } catch (error) {
+    console.error('Password reset error:', error);
+    showToast('Failed to reset password. Please try again.', 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Handle login
+async function handleLogin() {
+  const email = document.getElementById('login').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const msg = document.getElementById('loginMsg');
+  const btnText = document.getElementById('loginBtnText');
+  const btnLoader = document.getElementById('loginBtnLoader');
+
+  if (!email || !password) {
+    msg.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Please enter both email and password';
+    msg.className = 'mt-4 text-center text-sm text-red-600 dark:text-red-400';
+    return;
+  }
+
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    msg.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Please enter a valid email address';
+    msg.className = 'mt-4 text-center text-sm text-red-600 dark:text-red-400';
+    return;
+  }
+
+  btnText.textContent = 'Signing In...';
+  btnLoader.classList.remove('hidden');
+
+  try {
+    // First, check if the user exists in the users table
+    const { data: users, error: userError } = await supabaseClient
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (userError) {
+      if (userError.code === 'PGRST116' || userError.message.includes('not found')) {
+        msg.innerHTML = '<i class="fas fa-times-circle mr-1"></i> The required \'users\' table does not exist. Please set it up.';
+        msg.className = 'mt-4 text-center text-sm text-red-600 dark:text-red-400';
+      } else {
+        msg.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Invalid email or password';
+        msg.className = 'mt-4 text-center text-sm text-red-600 dark:text-red-400';
+      }
+      btnText.textContent = 'Sign In';
+      btnLoader.classList.add('hidden');
+      return;
+    }
+
+    // In a real application, you would hash the password and compare it
+    // For demo purposes, we'll use plain text comparison
+    if (users.password !== password) {
+      msg.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Invalid email or password';
+      msg.className = 'mt-4 text-center text-sm text-red-600 dark:text-red-400';
+      btnText.textContent = 'Sign In';
+      btnLoader.classList.add('hidden');
+      return;
+    }
+
+    // Store user info (excluding password for security)
+    currentUser = {
+      id: users.id,
+      email: users.email,
+      name: users.name,
+      role: users.role || 'admin',
+      loginTime: new Date().toISOString()
+    };
+
+    localStorage.setItem('admin-user', JSON.stringify(currentUser));
+
+    msg.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Login successful!';
+    msg.className = 'mt-4 text-center text-sm text-green-600 dark:text-green-400';
+
+    setTimeout(() => {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('dashboardPage').classList.remove('hidden');
+      fetchResults();
+    }, 1000);
+  } catch (error) {
+    console.error('Login error:', error);
+    msg.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Login failed. Please try again.';
+    msg.className = 'mt-4 text-center text-sm text-red-600 dark:text-red-400';
+    btnText.textContent = 'Sign In';
+    btnLoader.classList.add('hidden');
+  }
+}
+
+// Fetch results with retry mechanism
+async function fetchResults(isRetry = false) {
+  // Prevent multiple simultaneous fetches
+  if (isFetching) {
+    console.log('Fetch already in progress, skipping...');
+    return;
+  }
+
+  if (!currentUser) {
+    showToast('Please login first', 'error');
+    return;
+  }
+
+  isFetching = true;
+  showLoading();
+  currentTable = document.getElementById('testSelect').value;
+
+  // Reset retry count for new requests
+  if (!isRetry) {
+    retryCount = 0;
+  }
+
+  // Check if the selected test has data available
+  if (!availableTests.includes(currentTable)) {
+    hideLoading();
+    isFetching = false;
+    showNoDataMessage();
+    updateStats([]);
+    renderTable([]);
+    return;
+  }
+
+  // Hide no data message if it was previously shown
+  document.getElementById('noDataMessage').classList.add('hidden');
+
+  try {
+    const { data, error } = await supabaseClient
+      .from(currentTable)
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(100);
+
+    if (error) {
+      throw error;
+    }
+
+    // Reset retry count on successful fetch
+    retryCount = 0;
+
+    // Process data
+    const dataArray = data || [];
+    renderTable(dataArray);
+    updateStats(dataArray);
+    updateLastUpdated();
+    hideLoading();
+    isFetching = false;
+
+    // If we were retrying, show success message
+    if (isRetry) {
+      showToast('Data refreshed successfully', 'success');
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+
+    // If we haven't reached max retries, try again
+    if (retryCount < MAX_RETRIES) {
+      retryCount++;
+      console.log(`Retrying fetch attempt ${retryCount} of ${MAX_RETRIES}`);
+
+      // Show retry message
+      showToast(`Retrying... Attempt ${retryCount} of ${MAX_RETRIES}`, 'info');
+
+      // Wait before retrying (exponential backoff)
+      setTimeout(() => {
+        isFetching = false;
+        fetchResults(true);
+      }, 1000 * Math.pow(2, retryCount - 1));
+    } else {
+      // Max retries reached, show error
+      hideLoading();
+      isFetching = false;
+      showToast('Failed to fetch data after multiple attempts', 'error');
+
+      // Reset retry count
+      retryCount = 0;
+
+      // Show empty state
+      renderTable([]);
+      updateStats([]);
+    }
+  }
+}
+
+// Show no data message
+function showNoDataMessage() {
+  const noDataMessage = document.getElementById('noDataMessage');
+  const noDataText = document.getElementById('noDataText');
+  const testSelect = document.getElementById('testSelect');
+  const selectedTestName = testSelect.options[testSelect.selectedIndex].text;
+
+  noDataText.textContent = `No data available for ${selectedTestName}. Currently, only Mock Test 1 has data.`;
+  noDataMessage.classList.remove('hidden');
+
+  showToast(`No data available for ${selectedTestName}`, 'warning');
+}
+
+// Update statistics
+function updateStats(data) {
+  // Ensure data is an array
+  const dataArray = Array.isArray(data) ? data : [];
+
+  const totalTests = dataArray.length;
+  const passedTests = dataArray.filter(row => {
+    const score = row.score || 0;
+    const passingMarks = row.passingmarks || 0;
+    return score >= passingMarks;
+  }).length;
+
+  const failedTests = totalTests - passedTests;
+
+  // Calculate average score
+  let avgScore = 0;
+  if (totalTests > 0) {
+    const totalScore = dataArray.reduce((sum, row) => sum + (row.score || 0), 0);
+    avgScore = Math.round(totalScore / totalTests);
+  }
+
+  // Update UI with animation
+  animateValue('totalTests', parseInt(document.getElementById('totalTests').textContent) || 0, totalTests, 1000);
+  animateValue('passedTests', parseInt(document.getElementById('passedTests').textContent) || 0, passedTests, 1000);
+  animateValue('failedTests', parseInt(document.getElementById('failedTests').textContent) || 0, failedTests, 1000);
+
+  // Update average score with percentage
+  document.getElementById('avgScore').textContent = avgScore + '%';
+}
+
+// Animate number changes
+function animateValue(id, start, end, duration) {
+  const obj = document.getElementById(id);
+  const range = end - start;
+  const increment = range / (duration / 16);
+  let current = start;
+
+  const timer = setInterval(() => {
+    current += increment;
+    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+      current = end;
+      clearInterval(timer);
+    }
+    obj.textContent = Math.round(current);
+  }, 16);
+}
+
+// Update last updated timestamp
+function updateLastUpdated() {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('lastUpdated').textContent = `Last updated: ${timeString}`;
+}
+
+// Render table
+function renderTable(data) {
+  const minScore = parseInt(document.getElementById('scoreFilter').value || 0);
+
+  // Ensure data is an array
+  const dataArray = Array.isArray(data) ? data : [];
+
+  // Filter data based on minimum score
+  const filteredData = dataArray.filter(row => (row.score || 0) >= minScore);
+
+  // Check if jQuery and DataTables are available
+  if (typeof $ === 'undefined' || typeof $.fn.DataTable === 'undefined') {
+    console.error('jQuery or DataTables is not available');
+    showToast('Required libraries not loaded. Please refresh the page.', 'error');
+    return;
+  }
+
+  if (dataTable) {
+    dataTable.destroy();
+    dataTable = null;
+  }
+
+  const tbody = document.getElementById('resultBody');
+  const emptyState = document.getElementById('emptyState');
+
+  tbody.innerHTML = '';
+
+  if (filteredData.length === 0) {
+    emptyState.classList.remove('hidden');
+    return;
+  } else {
+    emptyState.classList.add('hidden');
+  }
+
+  filteredData.forEach(row => {
+    const score = row.score || 0;
+    const passingMarks = row.passingmarks || 0;
+    const isPassing = score >= passingMarks;
+
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
+    tr.innerHTML = `
+      <td class="px-5 py-4 whitespace-nowrap">
+        <div class="text-sm font-medium text-gray-900 dark:text-white">${row.username || '-'}</div>
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-700 dark:text-gray-300">${row.useremail || '-'}</div>
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+          <div class="text-sm font-medium text-gray-900 dark:text-white">${score}%</div>
+          <div class="ml-2 w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div class="bg-${isPassing ? 'green' : 'red'}-600 h-2 rounded-full" style="width: ${score}%"></div>
+          </div>
+        </div>
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${isPassing ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'}">
+          ${isPassing ? 'Pass' : 'Fail'}
+        </span>
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+        ${row.totalquestions || 0}
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+        ${formatTime(row.timetakenseconds)}
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+        ${row.userip || '-'}
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+        ${row.timestamp ? new Date(row.timestamp).toLocaleDateString() : '-'}
+      </td>
+      <td class="px-5 py-4 whitespace-nowrap text-sm font-medium">
+        <button onclick="showModal('${row.id}')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Initialize DataTable
+  try {
+    dataTable = $('#resultTable').DataTable({
+      pageLength: 10,
+      responsive: true,
+      order: [[7, 'desc']],
+      columnDefs: [
+        { orderable: false, targets: 8 }
+      ],
+      language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search records..."
+      },
+      dom: '<"flex justify-between items-center mb-4"f>rt<"flex justify-between items-center mt-4"ip>'
+    });
+  } catch (error) {
+    console.error('Error initializing DataTable:', error);
+    showToast('Error initializing table. Please refresh the page.', 'error');
+  }
+}
+
+// Format time in seconds to MM:SS format
+function formatTime(seconds) {
+  if (!seconds) return '-';
+
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Apply filter
+function applyFilter() {
+  if (currentUser) {
+    fetchResults();
+  }
+}
+
+// Show delete modal
+function showModal(id) {
+  deleteId = id;
+  document.getElementById('deleteModal').classList.remove('hidden');
+  document.getElementById('deleteModal').classList.add('flex');
+}
+
+// Hide delete modal
+function hideModal() {
+  deleteId = null;
+  document.getElementById('deleteModal').classList.add('hidden');
+  document.getElementById('deleteModal').classList.remove('flex');
+}
+
+// Confirm delete
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+  if (!deleteId) return;
+
+  try {
+    const { error } = await supabaseClient
+      .from(currentTable)
+      .delete()
+      .eq('id', deleteId);
+
+    if (error) {
+      throw error;
+    }
+
+    hideModal();
+    showToast('Record deleted successfully', 'success');
+    fetchResults();
+  } catch (error) {
+    console.error('Delete error:', error);
+    showToast("Failed to delete record", 'error');
+  }
+});
+
+// Export to Excel
+function exportExcel() {
+  if (typeof XLSX === 'undefined') {
+    showToast('Excel export library not loaded', 'error');
+    return;
+  }
+
+  const table = document.getElementById('resultTable');
+  const wb = XLSX.utils.table_to_book(table, {sheet: "Results"});
+  XLSX.writeFile(wb, 'uos_mock_test_results.xlsx');
+  showToast('Excel file downloaded successfully', 'success');
+}
+
+// Export to PDF
+function exportPDF() {
+  if (typeof jspdf === 'undefined' || typeof jspdf.jsPDF === 'undefined') {
+    showToast('PDF export library not loaded', 'error');
+    return;
+  }
+
+  try {
+    const doc = new jspdf.jsPDF();
+    doc.text("UoS Mock Test Results", 14, 16);
+
+    const headers = [];
+    const rows = [];
+
+    document.querySelectorAll("#resultTable thead th").forEach(th => {
+      if (th.textContent !== "Actions") headers.push(th.textContent.trim());
+    });
+
+    document.querySelectorAll("#resultTable tbody tr").forEach(tr => {
+      const row = [];
+      tr.querySelectorAll("td").forEach((td, i) => {
+        if (i < headers.length) row.push(td.textContent.trim());
+      });
+      rows.push(row);
+    });
+
+    doc.autoTable({
+      head: [headers],
+      body: rows,
+      startY: 25,
+      styles: {
+        fontSize: 9,
+        cellPadding: 3
+      },
+      headStyles: {
+        fillColor: [37, 99, 235],
+        textColor: 255
+      }
+    });
+
+    doc.save("uos_mock_test_results.pdf");
+    showToast('PDF file downloaded successfully', 'success');
+  } catch (error) {
+    console.error('PDF export error:', error);
+    showToast('Error generating PDF', 'error');
+  }
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem('admin-user');
+  currentUser = null;
+  location.reload();
+}
+
+// Event listeners
+document.getElementById('testSelect').addEventListener('change', () => {
+  // Reset any ongoing fetch
+  isFetching = false;
+  retryCount = 0;
+  if (currentUser) {
+    fetchResults();
+  }
+});
+
+// Initialize theme and check if all libraries are loaded
+window.addEventListener('DOMContentLoaded', async () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.className = savedTheme;
+  }
+
+  // Check if required libraries are loaded
+  if (typeof $ === 'undefined' || typeof $.fn.DataTable === 'undefined') {
+    showToast('Required libraries failed to load. Please refresh the page.', 'error');
+    return;
+  }
+
+  // Check if user is already logged in
+  const savedUser = localStorage.getItem('admin-user');
+  if (savedUser) {
+    try {
+      currentUser = JSON.parse(savedUser);
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('dashboardPage').classList.remove('hidden');
+      fetchResults();
+      // Auto-refresh every 30 seconds
+      setInterval(() => fetchResults(), 30000);
+    } catch (error) {
+      console.error('Error parsing saved user:', error);
+      localStorage.removeItem('admin-user');
+    }
+  }
+
+  // Log message to confirm loading is complete
+  console.log('Admin panel loaded. Please follow the instructions to set up the \'users\' table if you have not already.');
+});
+</script>
 </body>
 </html>
